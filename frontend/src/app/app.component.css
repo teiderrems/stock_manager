@@ -1,0 +1,25 @@
+.sidebar{
+    @apply sm:static hidden col-start-1 row-start-2 row-span-5 col-end-3 sm:grid sm:grid-cols-1 sm:grid-rows-5 border-r
+}
+
+.sidebar>:nth-child(1){
+    @apply row-start-1 row-end-5 col-span-1 overflow-hidden
+}
+
+
+
+.sidebar>.footer{
+    @apply sm:row-span-1 sm:row-start-5 border-t  sm:col-span-1 
+}
+
+.footer2{
+    @apply block row-span-1 w-full row-start-6 border-t  col-span-2 sm:hidden
+}
+
+.header{
+    @apply row-span-1 row-start-1 sm:col-span-12 col-span-2 w-full border-b
+}
+
+main{
+    @apply sm:col-start-3 p-4 sm:col-span-10 col-span-2 row-start-2 sm:row-span-5 row-span-4 overscroll-y-auto overflow-x-hidden
+}

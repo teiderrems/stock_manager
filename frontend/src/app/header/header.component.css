@@ -1,0 +1,18 @@
+header{
+    @apply  flex sm:flex-row flex-col sm:justify-between justify-around  items-center sm:px-4 px-2 h-full
+}
+header>nav{
+    @apply flex space-x-5
+}
+
+header>h1{
+    @apply text-3xl font-bold
+}
+
+/* a{
+    @apply py-2
+} */
+
+.active{
+    @apply border-b-2 border-b-black font-bold
+}

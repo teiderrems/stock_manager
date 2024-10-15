@@ -1,0 +1,6 @@
+footer{
+    @apply h-full
+}
+footer>div{
+    @apply p-4
+}
