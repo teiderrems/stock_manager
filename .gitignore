@@ -2,3 +2,8 @@
 /**/bin
 /**/obj
 /**/**/Migrations
+
+/**/.env
+/**/node_modules
+/**/.angular
+/**/.github
