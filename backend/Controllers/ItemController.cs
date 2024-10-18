@@ -1,11 +1,14 @@
 ﻿using backend.Data;
 using backend.Dto;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MR.AspNetCore.Pagination;
+using MR.EntityFrameworkCore.KeysetPagination;
 
 namespace backend.Controllers
 {
@@ -16,27 +19,39 @@ namespace backend.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ItemController> _logger;
 
-        public ItemController(ApplicationDbContext context, ILogger<ItemController> logger)
+        private readonly IPaginationService _paginationService;
+
+        public ItemController(ApplicationDbContext context, ILogger<ItemController> logger,IPaginationService paginationService)
         {
             _context = context;
             _logger = logger;
+            _paginationService = paginationService;
         }
 
 
         [HttpGet(Name = "List Item")]
-        public async Task<ActionResult<List<ItemDto>>> GetAllItem()
+        public async Task<ActionResult<KeysetPaginationResult<ItemDto>>> GetAllItem()
         {
             
             _logger.LogInformation("Item List");
-            return await _context.Items.Select((item)=> new ItemDto(
-                item.Id,item.Name,
-                item.StockQuantity,
-                item.MinPrice,
-                item.MaxPrice,
-                item.Description,
-                GetPictureUrl(item,HttpContext),
-                item.Categories,item.Comments,
-                item.CreatedAt,item.UpdatedAt,item.ExpirationAt)).ToListAsync();
+
+            var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x =>x.Name));//.Descending(x => x.Id)
+            var itemsPaginationResult = await _paginationService.KeysetPaginateAsync(
+                _context.Items,
+                _itemsKeysetQuery,
+                async id => await _context.Items.FindAsync(int.Parse(id)),
+                query=>query.Select((item) => new ItemDto(
+                    item.Id, item.Name,
+                    item.StockQuantity,
+                    item.MinPrice,
+                    item.MaxPrice,
+                    item.Description,
+                    GetPictureUrl(item, HttpContext),
+                    item.Categories, item.Comments,
+                    item.CreatedAt, item.UpdatedAt, item.ExpirationAt))
+                );
+
+            return itemsPaginationResult;
         }
 
         [HttpGet("{id:int}")]
@@ -44,7 +59,6 @@ namespace backend.Controllers
         {
             try
             {
-
                 var item = await _context.Items.FindAsync(id);
                 return item!=null? new ItemDto(item.Id, item.Name,
                     item.StockQuantity,
@@ -62,9 +76,14 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddItem(Item item)
         {
-            Console.WriteLine(item);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             if (item == null)
             {
                 return NotFound();
@@ -82,8 +101,14 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<Item>> UpdateItem( int id,Item Item)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             if (Item == null)
             {
                 return BadRequest();
@@ -108,8 +133,14 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> DeleteItem(int id)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             try
             {
                 var item = await _context.Items.FindAsync(id);

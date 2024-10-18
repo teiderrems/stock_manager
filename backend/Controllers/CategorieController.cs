@@ -1,5 +1,7 @@
 ﻿using backend.Data;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/categories")]
     [ApiController]
+    
     public class CategorieController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -44,8 +47,14 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddCategorie(Categorie categorie)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             if (categorie==null)
             {
                 return NotFound(); 
@@ -61,8 +70,14 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<Categorie>> UpdateCategorie( int id,Categorie categorie)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             if (categorie == null)
             {
                 return BadRequest();
@@ -87,8 +102,14 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCategorie(int id)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            {
+                return Unauthorized();
+            }
             try
             {
                 var cat = await _context.Categories.FindAsync(id);

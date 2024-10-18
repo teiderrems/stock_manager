@@ -6,6 +6,7 @@ namespace backend.Models
     public abstract class CommunProperties
     {
         [Key]
+        [Required]
         public int Id { get; set; }
 
         [DisplayName("Creation Date")]

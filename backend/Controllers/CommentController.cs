@@ -1,40 +1,54 @@
 ﻿using backend.Data;
+using backend.Dto;
 using backend.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MR.AspNetCore.Pagination;
+using MR.EntityFrameworkCore.KeysetPagination;
 
 namespace backend.Controllers
 {
-    [Route("api/comments")]
+    [Route("api/items")]
     [ApiController]
     public class CommentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CommentController> _logger;
+        private readonly IPaginationService _paginationService;
 
-        public CommentController(ApplicationDbContext context, ILogger<CommentController> logger)
+        public CommentController(ApplicationDbContext context, ILogger<CommentController> logger, IPaginationService paginationService)
         {
             _context = context;
             _logger = logger;
+            _paginationService = paginationService;
         }
 
 
-        [HttpGet(Name = "List Comment")]
-        public async Task<ActionResult<List<Comment>>> GetAllComment()
+        [HttpGet("{itemId:int}/comments",Name = "List Comment")]
+        public async Task<KeysetPaginationResult<CommentDto>> GetAllComment(int itemId)
         {
             _logger.LogInformation("Comment List");
-            return await _context.Comments.ToListAsync();
+
+            var _commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
+            var commentsPaginationResult = await _paginationService.KeysetPaginateAsync(
+                _context.Comments.Where(c=>c.Item.Id==itemId),
+                _commentsKeysetQuery,
+                async id => await _context.Comments.FindAsync(int.Parse(id)),
+                query => query.Select((item) => new CommentDto(item))
+                );
+
+            return commentsPaginationResult;
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Comment>> GetCommentById(int id)
+        [HttpGet("{itemId:int}/comments/{id:int}")]
+        public async Task<ActionResult<CommentDto>> GetCommentById(int itemId, int id)
         {
             try
             {
-                var comment = await _context.Comments.FindAsync(id);
-                return comment!=null?comment:NotFound();
+                var comment = await _context.Comments.FirstOrDefaultAsync(c=>c.Id==id && c.Item.Id==itemId);
+                return comment!=null?new CommentDto(comment) :NotFound();
             }
             catch (Exception ex)
             {
@@ -43,14 +57,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddComment(Comment comment)
+        [HttpPost("{itemId:int}/comments")]
+        public async Task<IActionResult> AddComment(int itemId,Comment comment)
         {
             if (comment==null)
             {
                 return NotFound(); 
             }
             try {
+                comment.Item = await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId);
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetCommentById), new { Id = comment.Id }, comment);
@@ -60,8 +75,8 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult<Comment>> UpdateComment( int id,Comment Comment)
+        [HttpPut("{itemId:int}/comments/{id:int}")]
+        public async Task<ActionResult<Comment>> UpdateComment(int itemId, int id,Comment Comment)
         {
             if (Comment == null)
             {
@@ -70,7 +85,7 @@ namespace backend.Controllers
             
             try
             {
-                if (Comment.Id==id)
+                if (Comment.Id==id && Comment.Item.Id==itemId)
                 {
                     var result=_context.Comments.Update(Comment);
                     await _context.SaveChangesAsync();
@@ -86,12 +101,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteComment(int id)
+        [HttpDelete("{itemId:int}/comments/{id:int}")]
+        public async Task<IActionResult> DeleteComment(int itemId,int id)
         {
             try
             {
-                var comment = await _context.Comments.FindAsync(id);
+                var comment = await _context.Comments.FirstOrDefaultAsync(c=>c.Id==id && c.Item.Id==itemId);
                 if (comment == null)
                 {
                     _logger.LogWarning($" Comment identified by id {id} don't exist in the Database");

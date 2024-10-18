@@ -11,8 +11,8 @@ namespace backend.Dto
 
         public string[]? ImageUrl { get; set; }
 
-        public List<Categorie>? Categories { get; set; }
-        public List<Comment>? Comments { get; set; }
+        public List<CategorieDto>? Categories { get; set; }
+        public List<CommentDto>? Comments { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateOnly? ExpirationDate { get; set; }
@@ -28,8 +28,8 @@ namespace backend.Dto
             this.Name = n;
             this.Description = d;
             this.ImageUrl = iu;
-            this.Categories = categories;
-            this.Comments = comments;
+            this.Categories = categories.Select(c=>new CategorieDto(c)).ToList();
+            this.Comments = comments.Select(c=>new CommentDto(c)).ToList();
             this.CreatedAt = ct;
             this.UpdatedAt = ut;
             this.ExpirationDate = ed;

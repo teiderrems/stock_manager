@@ -7,6 +7,6 @@ namespace backend.Models
         public string Title { get; set; } = title;
         public string? Message { get; set; } = message;
 
-        public Item item { get; set; }
+        public required Item Item { get; set; }
     }
 }
