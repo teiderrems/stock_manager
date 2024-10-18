@@ -12,7 +12,12 @@
       <app-header/>
   </div>
   <main>
-    
+    @if (items().length>0) {
+      <h1>{{ items()[0].name}}</h1>
+    }
+    @else {
+      <h1>hello</h1>
+    }
     <router-outlet />
   
   </main>

@@ -1,0 +1,10 @@
+<div class="profile"  mat-button [matMenuTriggerFor]="beforeMenu">
+    <img  src="images/profile.jpg"  alt="profile">
+    <h5 class="text-sm font-sans">John Doe</h5>
+</div>
+
+<!-- <button mat-button [matMenuTriggerFor]="beforeMenu">Before</button> -->
+<mat-menu #beforeMenu="matMenu" xPosition="before" panelClass="backgroundColor:#ff0000">
+    <button mat-menu-item>profile</button>
+    <button mat-menu-item>logOut</button>
+</mat-menu>
