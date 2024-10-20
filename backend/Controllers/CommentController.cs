@@ -1,8 +1,6 @@
 ﻿using backend.Data;
 using backend.Dto;
 using backend.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MR.AspNetCore.Pagination;
@@ -12,19 +10,11 @@ namespace backend.Controllers
 {
     [Route("api/items")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class CommentController(ApplicationDbContext context, ILogger<CommentController> logger, IPaginationService paginationService) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<CommentController> _logger;
-        private readonly IPaginationService _paginationService;
-
-        public CommentController(ApplicationDbContext context, ILogger<CommentController> logger, IPaginationService paginationService)
-        {
-            _context = context;
-            _logger = logger;
-            _paginationService = paginationService;
-        }
-
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<CommentController> _logger = logger;
+        private readonly IPaginationService _paginationService = paginationService;
 
         [HttpGet("{itemId:int}/comments",Name = "List Comment")]
         public async Task<KeysetPaginationResult<CommentDto>> GetAllComment(int itemId)
@@ -65,7 +55,7 @@ namespace backend.Controllers
                 return NotFound(); 
             }
             try {
-                comment.Item = await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId);
+                comment.Item = (await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId))!;
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetCommentById), new { Id = comment.Id }, comment);

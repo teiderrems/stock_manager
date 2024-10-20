@@ -2,41 +2,25 @@
 
 namespace backend.Dto
 {
-    public class ItemDto
+    public class ItemDto(int id, string? n, int sq, double mp, double map,
+        string? d, string[]? iu, List<Categorie>? categories,
+        List<Comment>? comments, DateTime? ct, DateTime? ut, DateOnly? ed)
     {
-        public int? Id { get; set; }
-        public string? Name { get; set; }
+        public int? Id { get; set; } = id;
+        public string? Name { get; set; } = n;
 
-        public string? Description { get; set; }
+        public string? Description { get; set; } = d;
 
-        public string[]? ImageUrl { get; set; }
+        public string[]? ImageUrl { get; set; } = iu;
 
-        public List<CategorieDto>? Categories { get; set; }
-        public List<CommentDto>? Comments { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public DateOnly? ExpirationDate { get; set; }
+        public List<CategorieDto>? Categories { get; set; } = categories!.Select(c => new CategorieDto(c)).ToList();
+        public List<CommentDto>? Comments { get; set; } = comments!.Select(c => new CommentDto(c)).ToList();
+        public DateTime? CreatedAt { get; set; } = ct;
+        public DateTime? UpdatedAt { get; set; } = ut;
+        public DateOnly? ExpirationDate { get; set; } = ed;
 
-        public double MinPrice { get; set; } = 0.0;
-        public double MaxPrice { get; set; }= 0.0;
-        public int StockQuantity { get; set; } = 0;
-
-        public ItemDto( int id, string? n,int sq,double mp,double map,
-            string? d, string[]? iu, List<Categorie>? categories, 
-            List<Comment>? comments, DateTime? ct, DateTime? ut, DateOnly? ed) {
-            this.Id = id;
-            this.Name = n;
-            this.Description = d;
-            this.ImageUrl = iu;
-            this.Categories = categories.Select(c=>new CategorieDto(c)).ToList();
-            this.Comments = comments.Select(c=>new CommentDto(c)).ToList();
-            this.CreatedAt = ct;
-            this.UpdatedAt = ut;
-            this.ExpirationDate = ed;
-            this.MinPrice = mp;
-            this.MaxPrice = map;
-            this.StockQuantity = sq;
-
-        }
+        public double MinPrice { get; set; } = mp;
+        public double MaxPrice { get; set; } = map;
+        public int StockQuantity { get; set; } = sq;
     }
 }

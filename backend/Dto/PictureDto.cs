@@ -1,19 +1,12 @@
 ﻿namespace backend.Dto
 {
-    public class PictureDto
+    public class PictureDto(int id, string? img, DateTime? ct, DateTime? ut)
     {
-        public int Id { get; set; }
-        public string? ImageUrl { get; set; }
+        public int Id { get; set; } = id;
+        public string? ImageUrl { get; set; } = img;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = ct;
 
-        public DateTime? UpdatedAt { get;set; }
-
-        public PictureDto( int id,string? img,DateTime? ct,DateTime? ut) { 
-            this.Id = id;
-            this.UpdatedAt = ut;
-            this.CreatedAt = ct;
-            this.ImageUrl = img;
-        } 
+        public DateTime? UpdatedAt { get; set; } = ut;
     }
 }

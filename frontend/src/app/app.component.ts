@@ -5,13 +5,16 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { HeaderComponent } from "./header/header.component";
 import { FooterComponent } from "./footer/footer.component";
 import { NavBarComponent } from "./nav-bar/nav-bar.component";
-import { Store } from '@ngrx/store';
+// import { Store } from '@ngrx/store';
 // import { CounterIncrementAction } from '../store/actions/counter.action';
 import { Observable } from 'rxjs';
 import { Item } from '../interfaces';
-import ItemsAction from '../store/actions/items.action';
+// import ItemsAction from '../store/actions/items.action';
 import { ItemService } from './item/item.service';
-import { ItemsSelector } from '../store/selectors/items.selector';
+import { Store } from '@ngxs/store';
+import { LoadItemAction } from '../state/item/item.actions';
+import { ItemState } from '../state/item/item.state';
+// import { ItemsSelector } from '../store/selectors/items.selector';
 
 @Component({
   selector: 'app-root',
@@ -25,35 +28,31 @@ import { ItemsSelector } from '../store/selectors/items.selector';
 export class AppComponent implements OnInit{
 
   // items$:Observable=this
-  public items=signal<Item[]>([]);
+  
 
   ngOnInit(): void {
     
-    this.itemService.getAllItem().subscribe(val=>{
-      this.items.set(val);
-      console.log(val);
-    })
-
+    this.getAllItems();
   }
 
-  loadItems(){
-    this.store.dispatch(ItemsAction.loadItems())
-  }
+  // loadItems(){
+  //   this.store.dispatch(ItemsAction.loadItems())
+  // }
 
   private readonly titleService:Title=inject(Title)
-  private readonly itemService:ItemService=inject(ItemService)
+  // private readonly itemService:ItemService=inject(ItemService)
 
-  
+
+  getAllItems(){
+    this.store.dispatch(LoadItemAction);
+  }
+
   
   private readonly store=inject(Store);
-
-  item$:Observable<Item[] | undefined>=this.store.select(ItemsSelector);
   
   title = signal<string>('frontend');
-  constructor(){
-    // this.items=this.store.select<Item[]>(state=>state.items.items);
-    // this.items.subscribe(value=>console.log(value));
-    this.item$.subscribe(val=>console.log(val));
-  }
+  // constructor(private readonly store:Store){}
+
+  public items$=this.store.selectSignal(ItemState.getItems);
 
 }

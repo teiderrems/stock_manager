@@ -1,4 +1,5 @@
 ﻿using backend.Data;
+using backend.Dto;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,25 +10,21 @@ namespace backend.Controllers
 {
     [Route("api/roles")]
     [ApiController]
-    public class UserRolesController : ControllerBase
+    public class UserRolesController(ApplicationDbContext context) : ControllerBase
     {
 
 
-        private readonly ApplicationDbContext _context;
-
-        public UserRolesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
 
 
 
         // GET: api/<ValuesController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ApplicationUserRole>>> GetAllRole()
-        {
-            return await _context.Roles.ToListAsync();
+        public async Task<ActionResult<IEnumerator<RoleDto>>> GetAllRole()
+        {   
+            var roles=await _context.Roles.Select(r=>new RoleDto(r)).ToListAsync();
+            return Ok(roles);
         }
 
         // GET api/<ValuesController>/5
@@ -38,18 +35,18 @@ namespace backend.Controllers
             if (role == null) { 
                 return NotFound();
             }
-            return Ok(role);
+            return Ok(new RoleDto(role));
         }
 
         // POST api/<ValuesController>
         [HttpPost]
-        public async Task<ActionResult<ApplicationUserRole>> Post(ApplicationUserRole role)
+        public async Task<ActionResult<RoleDto>> Post(ApplicationUserRole role)
         {
             _context.Roles.Add(role);
             try
             {
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetRoleById), new { id=role.Id }, role);
+                return CreatedAtAction(nameof(GetRoleById), new { id=role.Id }, new RoleDto(role));
             }
             catch (Exception ex) { 
                 return BadRequest(ex.Message);

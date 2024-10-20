@@ -1,14 +1,11 @@
 ﻿using backend.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data
 {
-    public class ApplicationDbContext:IdentityDbContext<ApplicationUser, ApplicationUserRole,int>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationUserRole,int>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
         public DbSet<Categorie> Categories { get; set; } = default!;
 
         public DbSet<Item> Items { get; set; } = default!;

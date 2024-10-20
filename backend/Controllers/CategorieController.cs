@@ -1,9 +1,6 @@
 ﻿using backend.Data;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,17 +9,10 @@ namespace backend.Controllers
     [Route("api/categories")]
     [ApiController]
     
-    public class CategorieController : ControllerBase
+    public class CategorieController(ApplicationDbContext context, ILogger<CategorieController> logger) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<CategorieController> _logger;
-
-        public CategorieController(ApplicationDbContext context, ILogger<CategorieController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<CategorieController> _logger = logger;
 
         [HttpGet(Name = "List Categorie")]
         public async Task<ActionResult<List<Categorie>>> GetAllCategorie()
@@ -51,7 +41,7 @@ namespace backend.Controllers
         public async Task<IActionResult> AddCategorie(Categorie categorie)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }
@@ -74,7 +64,7 @@ namespace backend.Controllers
         public async Task<ActionResult<Categorie>> UpdateCategorie( int id,Categorie categorie)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }
@@ -106,7 +96,7 @@ namespace backend.Controllers
         public async Task<IActionResult> DeleteCategorie(int id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }
@@ -120,7 +110,7 @@ namespace backend.Controllers
                 }
                 var result = _context.Categories.Remove(cat);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation(result.ToString());
+                _logger.LogInformation("Categorie Deleted successfully");
                 return Ok(result);
             }
             catch (Exception ex) {

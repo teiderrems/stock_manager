@@ -2,24 +2,15 @@
 
 namespace backend.Dto
 {
-    public class CommentDto
+    public class CommentDto(Comment comment)
     {
-        public int Id { get; set; }
-        public string? Title { get; set; }
+        public int Id { get; set; } = comment.Id;
+        public string? Title { get; set; } = comment.Title;
 
-        public string? Message { get; set; }
+        public string? Message { get; set; } = comment.Message;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = comment.CreatedAt;
 
-        public DateTime? UpdatedAt { get;set; }
-
-        public CommentDto(Comment comment)
-        {
-            Id = comment.Id;
-            Title = comment.Title;
-            Message = comment.Message;
-            CreatedAt = comment.CreatedAt;
-            UpdatedAt = comment.UpdatedAt;
-        }
+        public DateTime? UpdatedAt { get; set; } = comment.UpdatedAt;
     }
 }

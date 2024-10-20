@@ -2,16 +2,10 @@
 
 namespace backend.Dto
 {
-    public class CategorieDto
+    public class CategorieDto(Categorie categorie)
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-
-        public CategorieDto(Categorie categorie) { 
-            Id = categorie.Id;
-            Name = categorie.Name;
-            Description = categorie.Description;
-        }
+        public int Id { get; set; } = categorie.Id;
+        public string? Name { get; set; } = categorie.Name;
+        public string? Description { get; set; } = categorie.Description;
     }
 }

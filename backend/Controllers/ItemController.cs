@@ -2,9 +2,6 @@
 using backend.Dto;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Headers;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MR.AspNetCore.Pagination;
@@ -14,20 +11,12 @@ namespace backend.Controllers
 {
     [Route("api/items")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class ItemController(ApplicationDbContext context, ILogger<ItemController> logger, IPaginationService paginationService) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<ItemController> _logger;
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<ItemController> _logger = logger;
 
-        private readonly IPaginationService _paginationService;
-
-        public ItemController(ApplicationDbContext context, ILogger<ItemController> logger,IPaginationService paginationService)
-        {
-            _context = context;
-            _logger = logger;
-            _paginationService = paginationService;
-        }
-
+        private readonly IPaginationService _paginationService = paginationService;
 
         [HttpGet(Name = "List Item")]
         public async Task<ActionResult<KeysetPaginationResult<ItemDto>>> GetAllItem()
@@ -77,10 +66,10 @@ namespace backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddItem(Item item)
+        public async Task<IActionResult> AddItem(CreateItemDto item)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }
@@ -88,11 +77,34 @@ namespace backend.Controllers
             {
                 return NotFound();
             }
+            List<Categorie> categories=[];
+            List<Picture> pictures=[];
+
+            item.Categories!.ForEach(c=>{
+                categories.Add(_context.Categories.Find(c)!);
+            });
+            item.Pictures!.ForEach(p=>{
+                pictures.Add(_context.Pictures.Find(p)!);
+            });
+
+            var newItem=new Item{
+                Name=item.Name,
+                Pictures=pictures,
+                Categories=categories,
+                Comments=[],
+                Description=item.Description,
+                ExpirationAt=item.ExpirationAt,
+                StockQuantity=item.StockQuantity,
+                MinPrice=item.MinPrice,
+                Price=0.0,
+                MaxPrice=item.MaxPrice
+            };
+
             try
-            {
-                _context.Items.Add(item);
+            { 
+                _context.Items.Add(newItem);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetItemById), new { Id = item.Id }, item);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -102,25 +114,33 @@ namespace backend.Controllers
 
         [HttpPut("{id:int}")]
         [Authorize]
-        public async Task<ActionResult<Item>> UpdateItem( int id,Item Item)
+        public async Task<ActionResult<Item>> UpdateItem( int id,UpdateItemDto item)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }
-            if (Item == null)
+            if (item == null)
             {
                 return BadRequest();
             }
             
             try
             {
-                if (Item.Id==id)
+                if (item.Id==id)
                 {
-                    var result=_context.Items.Update(Item);
+                    var oldItem=_context.Items.Find(id);
+                    oldItem!.Description=oldItem.Description==item.Description?oldItem.Description:item.Description;
+                    oldItem.StockQuantity=oldItem.StockQuantity==item.StockQuantity?oldItem.StockQuantity:item.StockQuantity;
+                    oldItem.MinPrice=oldItem.MinPrice==item.MinPrice?oldItem.MinPrice:item.MinPrice;
+                    oldItem.Price=oldItem.Price==item.Price?oldItem.Price:item.Price;
+                    oldItem.MaxPrice=oldItem.MaxPrice==item.MaxPrice?oldItem.MaxPrice:item.MaxPrice;
+                    oldItem.UpdatedAt=DateTime.Now;
+                
+                    var result=_context.Items.Update(oldItem);
                     await _context.SaveChangesAsync();
-                    return Ok(result);
+                    return Ok();
                 }
                 else
                 {
@@ -137,7 +157,7 @@ namespace backend.Controllers
         public async Task<IActionResult> DeleteItem(int id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!(user.Roles.Any(r => r.Name == "admin" || r.Name == "guest")))
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
             }

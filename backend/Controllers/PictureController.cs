@@ -10,17 +10,10 @@ namespace backend.Controllers
 {
     [Route("api/pictures")]
     [ApiController]
-    public class PictureController : ControllerBase
+    public class PictureController(ApplicationDbContext context, ILogger<PictureController> logger) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<PictureController> _logger;
-
-        public PictureController(ApplicationDbContext context, ILogger<PictureController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
+        private readonly ApplicationDbContext _context = context;
+        private readonly ILogger<PictureController> _logger = logger;
 
         [HttpGet(Name = "List Picture")]
         public async Task<ActionResult<List<PictureDto>>> GetAllPicture()
@@ -35,8 +28,8 @@ namespace backend.Controllers
         {
             try
             {
-                var Picture = await _context.Pictures.FindAsync(id);
-                return Picture == null ? NotFound(): File(Picture.Content, Picture.FileType);
+                var picture = await _context.Pictures.FindAsync(id);
+                return picture == null ? NotFound(): File(picture.Content, picture.FileType,picture.FileName,true);
             }
             catch (Exception ex)
             {
@@ -66,7 +59,7 @@ namespace backend.Controllers
                 var image = await _context.Pictures.AddAsync(current);
                 _context.Pictures.Add(current);
                 await _context.SaveChangesAsync();
-                return Ok(current); //CreatedAtAction(nameof(Picture), new { Id = current.Id }, current);
+                return Ok(current.Id); //CreatedAtAction(nameof(Picture), new { Id = current.Id }, current);
             }
             catch (Exception ex)
             {
@@ -126,11 +119,29 @@ namespace backend.Controllers
         private async Task<byte[]> ConvertToByteArray(IFormFile formFile)
         {
             if (formFile == null || formFile.Length == 0)
-                return null;
-            using (var memoryStream = new MemoryStream())
             {
-                await formFile.CopyToAsync(memoryStream);
-                return memoryStream.ToArray();
+                var filePath=Path.Combine("backend","images","profile.jpg");
+                using (FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    // Le FileStream est maintenant un stream que tu peux utiliser
+                    // Par exemple, lire le contenu du fichier :
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        
+                        await fileStream.CopyToAsync(memoryStream);
+                        return memoryStream.ToArray();
+                    }
+                    // Ou, si tu veux juste manipuler le stream, tu peux le passer à d'autres méthodes qui attendent un Stream.
+                }
+            }
+            else
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    
+                    await formFile.CopyToAsync(memoryStream);
+                    return memoryStream.ToArray();
+                }
             }
         }
     }

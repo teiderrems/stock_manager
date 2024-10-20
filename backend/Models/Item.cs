@@ -26,6 +26,10 @@ namespace backend.Models
         [Required]
         public double MinPrice { get; set; } = 0.0;
 
+        [Column(TypeName = "decimal(10,4)")]
+        [Required]
+        public double Price { get; set; } = 0.0;
+
         [Column(TypeName ="decimal(10,4)")]
         [Required]
         public double MaxPrice { get; set; } = 0.0;

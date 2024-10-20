@@ -388,6 +388,9 @@ namespace backend.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,4)");
+
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 

@@ -3,38 +3,26 @@
 
 namespace backend.Dto
 {
-    public class BillDto
+    public class BillDto(int id, List<string>? items, string title, BillStatus? status, string? owner, decimal? totalAmount, DateTime? createdAt, DateTime? updatedAt, string? pdf)
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = id;
 
-        public List<string>? Items { get; set; }
-
-        
-        public string? Title { get; set; }
+        public List<string>? Items { get; set; } = items;
 
 
-        public BillStatus? Status { get; set; }
-
-        public string? Owner { get; set; }
-
-        public decimal? TotalAmount { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
-
-        public DateTime? UpdatedAt { get;set; }
-
-        public BillDto(int id, List<string>? items, string title, BillStatus? status, string? owner, decimal? totalAmount, DateTime? createdAt, DateTime? updatedAt)
-        {
-            Id = id;
-            Items = items;
-            Title = title;
-            Status = status;
-            Owner = owner;
-            TotalAmount = totalAmount;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
-        }
+        public string? Title { get; set; } = title;
 
 
+        public BillStatus? Status { get; set; } = status;
+
+        public string? Owner { get; set; } = owner;
+
+        public decimal? TotalAmount { get; set; } = totalAmount;
+
+        public string? PdfUrl { get; set; } = pdf;
+
+        public DateTime? CreatedAt { get; set; } = createdAt;
+
+        public DateTime? UpdatedAt { get; set; } = updatedAt;
     }
 }

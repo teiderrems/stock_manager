@@ -78,7 +78,9 @@ app.UseCors(MyAllowSpecificOrigins);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options=>{
+        options.DocumentTitle="Store Management";
+    });
 }
 
 app.UseAuthorization();
