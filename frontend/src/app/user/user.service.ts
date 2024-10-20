@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConstantService } from '../constant.service';
 import { HttpClient } from '@angular/common/http';
-import { User, UserResponseBody } from '../../interfaces';
+import { CreateUser, UpdateUser, User, UserResponseBody } from '../../interfaces';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -19,11 +19,11 @@ export class UserService {
     return this.http.get<User>(this.constantService.getBaseUrl()+`users/${id}`)
   }
 
-  addUser(user:Partial<User>):Observable<any>{
+  addUser(user:CreateUser):Observable<any>{
     return this.http.post(this.constantService.getBaseUrl()+'users',user);
   }
 
-  updateUser(id:number,user:Partial<User>):Observable<any>{
+  updateUser(id:number,user:UpdateUser):Observable<any>{
     
     return this.http.put(this.constantService.getBaseUrl()+`users/${id}`,user);
   }

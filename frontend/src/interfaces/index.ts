@@ -7,7 +7,14 @@ export interface Categorie{
 }
 
 export interface Comment{
-    id?:number;
+
+    id:number;
+    title?:string;
+    message?:string;
+}
+
+export interface CreateComment{
+
     title?:string;
     message?:string;
 }
@@ -125,16 +132,9 @@ export interface UserResponseBody{
     hasPrevious:boolean
 }
 
-export interface CategorieResponseBody{
-    data:Categorie[]
-}
 
 export interface RoleResponseBody{
     data:Role[]
-}
-
-export interface PictureResponseBody{
-    data:Picture[]
 }
 
 
@@ -176,4 +176,8 @@ export interface UpdateItem{
     MinPrice:number;
     Price:number;
     MaxPrice:number;
+}
+
+export interface RefreshToken{
+    refreshToken:string;
 }

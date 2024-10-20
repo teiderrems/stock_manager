@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CommentResponseBody } from '../../interfaces';
+import { CommentResponseBody, CreateComment } from '../../interfaces';
 import { Observable } from 'rxjs';
 import { ConstantService } from '../constant.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,11 +19,11 @@ export class CommentService {
     return this.http.get<Comment>(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`)
   }
 
-  addComment(comment:Partial<Comment>,itemId:number):Observable<any>{
+  addComment(comment:CreateComment,itemId:number):Observable<any>{
     return this.http.post(this.constantService.getBaseUrl()+`items/${itemId}/comments`,comment);
   }
 
-  updateComment(id:number,itemId:number,comment:Partial<Comment>):Observable<any>{
+  updateComment(id:number,itemId:number,comment:Comment):Observable<any>{
     
     return this.http.put(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`,comment);
   }

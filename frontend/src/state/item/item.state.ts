@@ -3,7 +3,7 @@ import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { LoadSuccessAction,UpdateIsErrorAction,LoadItemAction, ActionOnItemFailled, PostItemAction,PutItemAction,DeleteItemAction, UpdateLoadingAction, UpdateSuccessAction } from './item.actions';
 import { ItemResponseBody } from '../../interfaces';
 import { ItemService } from '../../app/item/item.service';
-import { catchError, exhaustMap, mergeMap } from 'rxjs/operators';
+import { catchError,mergeMap } from 'rxjs/operators';
 
 export interface ItemStateModel {
     items: ItemResponseBody;
