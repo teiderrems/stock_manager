@@ -14,7 +14,7 @@ namespace backend.Controllers
 {
     
     [ApiController]
-    
+    [Authorize]
     public class BillsController(ApplicationDbContext context, ILogger<BillsController> logger, IPaginationService paginationService) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
@@ -23,7 +23,6 @@ namespace backend.Controllers
 
         // GET: api/Bills
         [HttpGet]
-        [Authorize]
         [Route("api/users/{owner:int}/bills")]
         public async Task<ActionResult<KeysetPaginationResult<BillDto>>> GetBills(int owner)
         {
@@ -47,6 +46,7 @@ namespace backend.Controllers
 
         // GET: api/Bills/5
         [HttpGet("api/users/{owner:int}/bills/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetBill(int id,int owner)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id==owner);
@@ -64,7 +64,7 @@ namespace backend.Controllers
         // PUT: api/Bills/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("api/users/{owner:int}/bills/{id}")]
-        [Authorize]
+        
         public async Task<IActionResult> PutBill(int owner, int id, Bill bill)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
@@ -101,7 +101,7 @@ namespace backend.Controllers
         // POST: api/Bills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("api/users/{ownerId:int}/bills")]
-        [Authorize]
+        
         public async Task<ActionResult<Bill>> PostBill(int ownerId,Bill bill)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
@@ -117,7 +117,7 @@ namespace backend.Controllers
 
         // DELETE: api/Bills/5
         [HttpDelete("api/users/{owner:int}/bills/{id}")]
-        [Authorize]
+        
         public async Task<IActionResult> DeleteBill(int id,int owner)
         {
             var bill = await _context.Bills.FirstOrDefaultAsync(b => b.Id == id && b.Owner.Id == owner);
@@ -175,9 +175,9 @@ namespace backend.Controllers
         }
 
         private ActionResult GetFile(Bill bill,ApplicationUser? user){
-            var downloadName=$"Bill_{GetFullName(user!)}_{bill.CreatedAt.ToShortDateString()}.pdf";
+            // var downloadName=$"Bill_{GetFullName(user!)}_{bill.CreatedAt.ToShortDateString()}.pdf";
             var content=GeneratePdf(bill);
-            return File(content,"application/pdf",downloadName,true);
+            return File(content,"application/pdf");
         }
     }
 }

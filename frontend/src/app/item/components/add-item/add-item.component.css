@@ -6,7 +6,7 @@ button{
     border-radius: 5px;
 }
 
-input{
+input,textarea{
     border-radius: 5px;
 }
 
@@ -23,3 +23,12 @@ input{
 .ng-untouched{
     @apply border-gray-500
 }
+
+label{
+    @apply leading-5
+}
+
+select{
+    border-radius : 5px;
+}
+

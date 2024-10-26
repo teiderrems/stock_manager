@@ -1,0 +1,41 @@
+@if (isAuthenticate()) {
+  <nz-card
+    [nzCover]="coverTemplate"
+    class="hover:scale-110 hover:shadow-md hover:cursor-pointer hover:shadow-blue-400 rounded-md"
+    style="height: 200px; width: 200px"
+    [nzActions]="[actionSetting, actionEdit, actionEllipsis]"
+  >
+    <nz-card-meta
+      [nzTitle]="currentItem()?.name!"
+      [nzDescription]="currentItem()?.description ?? ''"
+    ></nz-card-meta>
+  </nz-card>
+}
+@else {
+  <nz-card
+  [nzCover]="coverTemplate"
+  class="hover:scale-110 hover:shadow-md hover:cursor-pointer hover:shadow-blue-400 rounded-md"
+  style="height: 200px; width: 200px"
+  >
+    <nz-card-meta
+      [nzTitle]="currentItem()?.name!"
+      [nzDescription]="currentItem()?.description ?? ''"
+    ></nz-card-meta>
+  </nz-card>
+}
+<ng-template #coverTemplate>
+  <img
+    nz-image
+    alt="{{ currentItem()?.name }}"
+    nzSrc="{{ currentItem()?.imageUrl }}"
+  />
+</ng-template>
+<ng-template #actionSetting>
+  <span nz-icon nzType="setting"></span>
+</ng-template>
+<ng-template #actionEdit>
+  <span nz-icon nzType="edit"></span>
+</ng-template>
+<ng-template #actionEllipsis>
+  <span nz-icon nzType="ellipsis"></span>
+</ng-template>

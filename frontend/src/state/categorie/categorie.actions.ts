@@ -1,4 +1,4 @@
-import { Categorie } from "../../interfaces";
+import { Categorie, CreateCategorie } from "../../interfaces";
 
 
 
@@ -22,7 +22,7 @@ export class ActionOnCategorieFailled{
 export class PostCategorieAction{
   static readonly type="[Categorie API] Add New Categorie";
 
-  constructor(public categorie:Partial<Categorie>){}
+  constructor(public categorie:CreateCategorie){}
 }
 
 

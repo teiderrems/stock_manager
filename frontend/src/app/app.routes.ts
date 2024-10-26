@@ -3,36 +3,51 @@ import { AppComponent } from './app.component';
 import { ItemComponent } from './item/item.component';
 import { ItemComponent as AdminItemComponents } from './admin/item/item.component';
 import { HomeComponent } from './home/home.component';
-import { SignInComponent } from './sign-in/sign-in.component';
-import { SignUpComponent } from './sign-up/sign-up.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 // import { FooterComponent } from './footer/footer.component';
 
 export const routes: Routes = [
     {
+        path:"",redirectTo:'/home',pathMatch:"full"
+    },
+    {
         path:"items",
         component:ItemComponent,
-        pathMatch:"full"
+        pathMatch:"full",
+        data: {
+            breadcrumb: 'Items'
+        }
     },
     {
         path:'home',
         component:HomeComponent,
-        pathMatch:"full"
+        pathMatch:"full",
+        data: {
+            breadcrumb: 'Home'
+        }
     },
     {
-        path:'',redirectTo:'/home',pathMatch:"full"
+        path:'login',
+        component:LoginComponent
+        ,pathMatch:"full",
+        data: {
+            breadcrumb: 'Login'
+        }
     },
     {
-        path:'signin',
-        component:SignInComponent
-        ,pathMatch:"full"
-    },
-    {
-        path:'signup',
-        component:SignUpComponent
-        ,pathMatch:"full"
+        path:'register',
+        component:RegisterComponent
+        ,pathMatch:"full",
+        data: {
+            breadcrumb: 'Register'
+        }
     },
     {
         path:"admin/items",
-        component:AdminItemComponents
+        component:AdminItemComponents,
+        data: {
+            breadcrumb: 'AdminItems'
+        }
     }
 ];

@@ -3,7 +3,7 @@
 namespace backend.Dto
 {
     public class ItemDto(int id, string? n, int sq, double mp, double map,
-        string? d, string[]? iu, List<Categorie>? categories,
+        string? d, string? iu, List<Categorie>? categories,
         List<Comment>? comments, DateTime? ct, DateTime? ut, DateOnly? ed)
     {
         public int? Id { get; set; } = id;
@@ -11,7 +11,7 @@ namespace backend.Dto
 
         public string? Description { get; set; } = d;
 
-        public string[]? ImageUrl { get; set; } = iu;
+        public string? ImageUrl { get; set; } = iu;
 
         public List<CategorieDto>? Categories { get; set; } = categories!.Select(c => new CategorieDto(c)).ToList();
         public List<CommentDto>? Comments { get; set; } = comments!.Select(c => new CommentDto(c)).ToList();

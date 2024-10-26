@@ -21,9 +21,9 @@ export class PictureService {
     return this.http.get<Picture>(this.constantService.getBaseUrl()+`pictures/${id}`)
   }
 
-  addPicture(picture:FormData):Observable<any>{
-
-    return this.http.post(this.constantService.getBaseUrl()+'pictures',picture);
+  addPicture(picture:FormData):Observable<number>{
+    
+    return this.http.post<number>(this.constantService.getBaseUrl()+'pictures',picture);
   }
 
   updatePicture(id:number,picture:FormData):Observable<any>{

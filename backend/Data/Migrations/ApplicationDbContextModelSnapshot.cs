@@ -166,12 +166,10 @@ namespace backend.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Firstname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lastname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -213,8 +211,6 @@ namespace backend.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("Firstname", "Lastname");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -378,6 +374,9 @@ namespace backend.Data.Migrations
                     b.Property<DateOnly?>("ExpirationAt")
                         .HasColumnType("date");
 
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("MaxPrice")
                         .HasColumnType("decimal(10,4)");
 
@@ -386,7 +385,7 @@ namespace backend.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,4)");
@@ -400,6 +399,11 @@ namespace backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BillId");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Items");
                 });
@@ -427,9 +431,6 @@ namespace backend.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ItemId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -438,9 +439,7 @@ namespace backend.Data.Migrations
                     b.HasIndex("FileName")
                         .IsUnique();
 
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("Pictures");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("CategorieItem", b =>
@@ -552,15 +551,12 @@ namespace backend.Data.Migrations
                     b.HasOne("backend.Models.Bill", null)
                         .WithMany("Items")
                         .HasForeignKey("BillId");
-                });
 
-            modelBuilder.Entity("backend.Models.Picture", b =>
-                {
-                    b.HasOne("backend.Models.Item", "Item")
-                        .WithMany("Pictures")
-                        .HasForeignKey("ItemId");
+                    b.HasOne("backend.Models.Picture", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
 
-                    b.Navigation("Item");
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("backend.Models.ApplicationUser", b =>
@@ -576,8 +572,6 @@ namespace backend.Data.Migrations
             modelBuilder.Entity("backend.Models.Item", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Pictures");
                 });
 #pragma warning restore 612, 618
         }

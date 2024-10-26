@@ -1,25 +1,49 @@
-.sidebar{
-    @apply sm:static hidden col-start-1 row-start-2 row-span-5 col-end-3 sm:grid sm:grid-cols-1 sm:grid-rows-5 border-r
-}
+.trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
 
-.sidebar>:nth-child(1){
-    @apply row-start-1 row-end-5 col-span-1 overflow-hidden
-}
+  .trigger:hover {
+    color: #1890ff;
+  }
 
+  .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+    font-weight: bold;
+    font-size: large;
+  }
 
+  /* nz-header {
+    background: #fff;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  } */
 
-.sidebar>.footer{
-    @apply sm:row-span-1 sm:row-start-5 border-t  sm:col-span-1 
-}
+  /* nz-content {
+    margin: 0 16px;
+  } */
 
-.footer2{
-    @apply block row-span-1 w-full row-start-6 border-t  col-span-2 sm:hidden
-}
+  nz-breadcrumb {
+    margin: 10px 0;
+  }
 
-.header{
-    @apply row-span-1 row-start-1 sm:col-span-12 col-span-2 w-full border-b
-}
+  .inner-content {
+    padding: 24px;
+    background: #fff;
+    min-height: 360px;
+  }
 
-main{
-    @apply sm:col-start-3 p-4 sm:col-span-10 col-span-2 row-start-2 sm:row-span-5 row-span-4 overscroll-y-auto overflow-x-hidden
-}
+  nz-footer {
+    text-align: center;
+  }
+
+  .active{
+    @apply border-b border-b-gray-700
+  }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { LoadSuccessAction,UpdateIsErrorAction,LoadUserAction, ActionOnUserFailled, PostUserAction,PutUserAction,DeleteUserAction, UpdateLoadingAction, UpdateSuccessAction } from './user.actions';
-import { UserResponseBody } from '../../interfaces';
+import { LoadSuccessAction,UpdateIsErrorAction,LoadUserAction, ActionOnUserFailled, PostUserAction,PutUserAction,DeleteUserAction, UpdateLoadingAction, UpdateSuccessAction, FetchUserWhoAuthenticate, FetchUserSuccess } from './user.actions';
+import { User, UserResponseBody } from '../../interfaces';
 import { UserService } from '../../app/user/user.service';
 import { catchError,mergeMap } from 'rxjs/operators';
 
@@ -14,6 +14,7 @@ export interface UserStateModel {
     isSuccess:boolean;
     isError:boolean;
     isLoading:boolean;
+    user:User;
 }
 
 
@@ -30,7 +31,8 @@ export interface UserStateModel {
     error:{},
     isSuccess:false,
     isError:false,
-    isLoading:true
+    isLoading:true,
+    user:{}
   }
 })
 @Injectable()
@@ -89,6 +91,19 @@ export class UserState {
     )
   }
 
+  @Action(FetchUserWhoAuthenticate)
+  loadCurrentUser(ctx: StateContext<UserStateModel>,{username}:FetchUserWhoAuthenticate){
+    return this.userService.getUserByUsername(username).pipe(
+      mergeMap((value)=>ctx.dispatch([new FetchUserSuccess(value),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+    )
+  }
+
+  @Action(FetchUserSuccess)
+  fetchUserSuccess(ctx: StateContext<UserStateModel>,{user}:FetchUserSuccess){
+    ctx.patchState({user});
+  }
+
   @Action(UpdateLoadingAction)
   updateIsLoading(ctx:StateContext<UserStateModel>){
 
@@ -136,5 +151,12 @@ export class UserState {
   static getState(state:UserStateModel){
     return state;
   }
+
+  @Selector()
+  static getCurrentUser(state:UserStateModel){
+    return state.user;
+  }
+
+  
 
 }

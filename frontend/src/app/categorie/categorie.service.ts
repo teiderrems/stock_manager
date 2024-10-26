@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConstantService } from '../constant.service';
-import { Categorie } from '../../interfaces';
+import { Categorie, CreateCategorie } from '../../interfaces';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -22,7 +22,7 @@ export class CategorieService {
     return this.http.get<Categorie>(this.constantService.getBaseUrl()+`categories/${id}`)
   }
 
-  addCategorie(categorie:Partial<Categorie>):Observable<any>{
+  addCategorie(categorie:CreateCategorie):Observable<any>{
 
     return this.http.post(this.constantService.getBaseUrl()+`categories`,categorie);
   }

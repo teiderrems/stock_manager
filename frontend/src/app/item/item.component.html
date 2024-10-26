@@ -1,1 +1,28 @@
-<p>item works!</p>
+<div class="h-full grid grid-rows-12 overflow-hidden">
+  <div
+    class="row-span-1 row-start-1 px-4 rounded-t-md flex justify-between items-center"
+  >
+    <h1 class="text-gray-700">Item List</h1>
+    <button
+      (click)="toggleModal()"
+      class="bg-opacity-50 text-green-400 text-3xl rounded-full"
+    >
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+    </button>
+  </div>
+
+  <!-- <app-add-item/> -->
+  <main class="px-4 row-span-10 row-start-2 overflow-y-auto flex flex-wrap gap-5">
+    @if (items().data.length>0) { @for (item of items().data; track item.id) {
+      
+      <app-itemdetail [currentItem]="item"/>
+    } }
+  </main>
+  <div class="row-span-1 px-4  flex justify-end items-center">
+    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="false" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="items().totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="items().pageSize"></nz-pagination>
+  </div>
+
+  @if (open()) {
+    <app-add-item [isVisible]="open()" (close)="hiddenModal()" />
+  }
+</div>

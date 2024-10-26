@@ -1,4 +1,4 @@
-import { Item, ItemResponseBody } from "../../interfaces";
+import { CreateItem, Item, ItemResponseBody, UpdateItem } from "../../interfaces";
 
 
 
@@ -9,6 +9,7 @@ export class LoadSuccessAction {
 
 export class LoadItemAction {
   static readonly type = '[Item API] Load Items';
+  constructor(public page:number,public limit:number){}
 }
 
 
@@ -22,14 +23,14 @@ export class ActionOnItemFailled{
 export class PostItemAction{
   static readonly type="[Item API] Add New Item";
 
-  constructor(public item:Partial<Item>){}
+  constructor(public item:CreateItem){}
 }
 
 
 export class PutItemAction{
   static readonly type="[Item API] Update Item Identify By Id";
 
-  constructor(public item:Partial<Item>,public id:number){}
+  constructor(public item:UpdateItem,public id:number){}
 }
 
 

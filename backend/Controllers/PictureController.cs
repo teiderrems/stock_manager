@@ -1,8 +1,7 @@
 ﻿using backend.Data;
 using backend.Dto;
 using backend.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,7 @@ namespace backend.Controllers
 {
     [Route("api/pictures")]
     [ApiController]
+    [AllowAnonymous]
     public class PictureController(ApplicationDbContext context, ILogger<PictureController> logger) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
@@ -20,7 +20,7 @@ namespace backend.Controllers
         {
             var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
             _logger.LogInformation("Picture List");
-            return await _context.Pictures.Select(p=>new PictureDto(p.Id,$"{imageUrl}{p.Id}",p.CreatedAt,p.UpdatedAt)).ToListAsync();
+            return await _context.Images.Select(p=>new PictureDto(p.Id,$"{imageUrl}{p.Id}",p.CreatedAt,p.UpdatedAt)).ToListAsync();
         }
 
         [HttpGet("{id:int}")]
@@ -28,8 +28,8 @@ namespace backend.Controllers
         {
             try
             {
-                var picture = await _context.Pictures.FindAsync(id);
-                return picture == null ? NotFound(): File(picture.Content, picture.FileType,picture.FileName,true);
+                var picture = await _context.Images.FindAsync(id);
+                return picture == null ? NotFound(): File(picture.Content, picture.FileType);
             }
             catch (Exception ex)
             {
@@ -46,8 +46,14 @@ namespace backend.Controllers
             {
                 return NotFound();
             }
+            var alreadyExist=await _context.Images.FirstOrDefaultAsync(p=>p.FileName==picture.FileName);
+            if (alreadyExist!=null)
+            {
+                return Ok(alreadyExist.Id);
+            }
             try
             {
+                
                 var Content = await ConvertToByteArray(picture);
                 Picture current = new()
                 {
@@ -56,8 +62,8 @@ namespace backend.Controllers
                     Content = Content
                 };
 
-                var image = await _context.Pictures.AddAsync(current);
-                _context.Pictures.Add(current);
+                var image = await _context.Images.AddAsync(current);
+                _context.Images.Add(current);
                 await _context.SaveChangesAsync();
                 return Ok(current.Id); //CreatedAtAction(nameof(Picture), new { Id = current.Id }, current);
             }
@@ -84,7 +90,7 @@ namespace backend.Controllers
                     Content = Content,
                     Id=id
                 };
-                var result = _context.Pictures.Update(current);
+                var result = _context.Images.Update(current);
                 await _context.SaveChangesAsync();
                 return Ok(result);
             }
@@ -98,14 +104,14 @@ namespace backend.Controllers
         {
             try
             {
-                var picture = await _context.Pictures.FindAsync(id);
+                var picture = await _context.Images.FindAsync(id);
 
                 if (picture==null)
                 {
                     _logger.LogWarning($" Picture identified by id {id} don't exist in the Database");
                     return BadRequest();
                 }
-                var result = _context.Pictures.Remove(picture);
+                var result = _context.Images.Remove(picture);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation(result.ToString());
                 return Ok(result);

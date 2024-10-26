@@ -3,7 +3,7 @@ nav{
 }
 
 nav>a{
-    @apply hover:cursor-pointer hover:font-bold
+    @apply hover:cursor-pointer hover:font-bold dark:text-white text-black
 }
 
 .active{

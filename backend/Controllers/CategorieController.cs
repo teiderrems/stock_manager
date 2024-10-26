@@ -37,14 +37,14 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> AddCategorie(Categorie categorie)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            // var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            // if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
+            // {
+            //     return Unauthorized();
+            // }
             if (categorie==null)
             {
                 return NotFound(); 

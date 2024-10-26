@@ -1,0 +1,137 @@
+<nz-modal
+  [nzVisible]="isVisible()"
+  nzTitle="Add New Item"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzOkText]="null"
+  [nzCancelText]="null"
+  [nzMask]="isVisible()"
+  [nzClosable]="isVisible()"
+  [nzDraggable]="true"
+  [nzFooter]="null"
+>
+  <form
+    nz-form
+    [formGroup]="item"
+    class="flex flex-col space-y-4"
+    *nzModalContent
+    
+  >
+    <div class="flex space-x-3">
+      <div class="w-4/5 flex flex-col space-y-1">
+        <label for="name">Name</label>
+        <input
+          nz-input
+          [required]="true"
+          class="form-input"
+          [minlength]="8"
+          type="text"
+          name="name"
+          formControlName="name"
+        />
+      </div>
+
+      <div class="flex-1 flex flex-col space-y-1">
+        <label for="expirationAt">Expiration Date</label>
+        <input
+          type="date"
+          class="form-input"
+          nz-input
+          name="expirationAt"
+          id="expirationAt"
+          formControlName="expirationAt"
+        />
+      </div>
+    </div>
+
+    <div class="flex space-x-5 items-center">
+      <div class="flex flex-col space-y-1 flex-1">
+        <label for="stockQuantity">QuantityStock</label>
+        <input
+          nz-input
+          type="number"
+          class="form-input"
+          value="0.0"
+          name="stockQuantity"
+          formControlName="stockQuantity"
+          min="1"
+          id=""
+        />
+      </div>
+      <div class="flex flex-col space-y-1 flex-1">
+        <label for="minPrice">MinPrice</label>
+        <input
+          nz-input
+          type="number"
+          class="form-input"
+          value="0.0"
+          name="minPrice"
+          formControlName="minPrice"
+          min="1.5"
+          id=""
+        />
+      </div>
+      <div class="flex flex-col space-y-1 flex-1">
+        <label for="maxPrice">MaxPrice</label>
+        <input
+          nz-input
+          type="number"
+          class="form-input"
+          name="maxPrice"
+          value="0.0"
+          formControlName="maxPrice"
+          min="1.5"
+          id=""
+        />
+      </div>
+    </div>
+
+    <div class="flex flex-col space-y-1 flex-1">
+      <label for="description">Description</label>
+      <textarea nz-input class="form-textarea" nz-row="4"></textarea>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="flex flex-col justify-center space-y-1 flex-1">
+
+        <label for="categorie">Categories</label>
+        <nz-select
+          
+          [nzMaxTagPlaceholder]="tagPlaceHolder"
+          nzMode="multiple"
+          formControlName="categories"
+          [nzPlaceHolder]="'Select categories'"
+          [nzShowSearch]="true"
+        >
+          @for (item of categorieState().categories; track item.id) {
+          <nz-option [nzLabel]="item.name!" [nzValue]="item.id"></nz-option>
+          }
+        </nz-select>
+        <ng-template #tagPlaceHolder let-selectedList
+          >and {{ selectedList.length }} more selected
+        </ng-template
+        >
+        @if (categorieState().isError) {
+          <span nz-button class="text-red-500 text-center">
+            {{categorieState().error.message}}
+          </span>
+        }
+      </div>
+      <button class="text-3xl mt-5  text-green-400 "><span (click)="addCategorie.set(true)" nz-icon nzType="plus" nzTheme="outline"></span></button>
+        @if (addCategorie()) {
+          <app-categorie [isVisible]="addCategorie()" (close)="addCategorie.set(false)"/>
+        }
+      
+    </div >
+    
+    <div class="flex flex-col space-y-1">
+      <label for="picture">Pictures</label>
+      <app-picture (upload)="updatePicture($event!)" (load)="updateImage($event)" />
+    </div>
+    <div class="flex flex-col flex-1">
+      <button nz-button [nzLoading]="isSubmit()" (click)="PostItem();isSubmit.set(true)" [disabled]="item.invalid">
+        Submit
+      </button>
+    </div>
+  </form>
+</nz-modal>

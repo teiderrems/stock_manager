@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { LoadSuccessAction,UpdateIsErrorAction,LoadPictureAction, ActionOnPictureFailled, PostPictureAction,PutPictureAction,DeletePictureAction, UpdateLoadingAction, UpdateSuccessAction } from './picture.actions';
+import { LoadSuccessAction,UpdateIsErrorAction,LoadPictureAction, ActionOnPictureFailled, PostPictureAction,PutPictureAction,DeletePictureAction, UpdateLoadingAction, UpdateSuccessAction, LoadLastPostPictureAction } from './picture.actions';
 import { Picture } from '../../interfaces';
 import { PictureService } from '../../app/picture/picture.service';
 import { catchError,mergeMap } from 'rxjs/operators';
@@ -15,6 +15,7 @@ export interface PictureStateModel {
     isSuccess:boolean;
     isError:boolean;
     isLoading:boolean;
+    picture:number| undefined
 }
 
 
@@ -26,7 +27,8 @@ export interface PictureStateModel {
     error:{},
     isSuccess:false,
     isError:false,
-    isLoading:true
+    isLoading:true,
+    picture:undefined,
   }
 })
 @Injectable()
@@ -57,12 +59,20 @@ export class PictureState {
       status
     }});
   }
+
+  @Action(LoadLastPostPictureAction)
+  loadLastPostPicture(ctx: StateContext<PictureStateModel>,{id}:LoadLastPostPictureAction){
+    
+    ctx.patchState({picture:id});
+  }
+
   
   @Action(PostPictureAction)
   addNewPicture(ctx:StateContext<PictureStateModel>,{picture}:PostPictureAction){
 
     return this.pictureService.addPicture(picture).pipe(
-      mergeMap(()=>ctx.dispatch([LoadPictureAction,UpdateSuccessAction,UpdateLoadingAction])),
+
+      mergeMap((id)=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction,new LoadLastPostPictureAction(id)])),
       catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     );
@@ -73,7 +83,7 @@ export class PictureState {
   updatePicture(ctx:StateContext<PictureStateModel>,{picture,id}:PutPictureAction){
 
     return this.pictureService.updatePicture(id,picture).pipe(
-      mergeMap(()=>ctx.dispatch([LoadPictureAction,UpdateSuccessAction,UpdateLoadingAction])),
+      mergeMap(()=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction])),
       catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     );
@@ -84,7 +94,7 @@ export class PictureState {
     
     return this.pictureService.deletePicture(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([LoadPictureAction,UpdateSuccessAction,UpdateLoadingAction])),
+      mergeMap(()=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction])),
       catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     )
@@ -136,6 +146,12 @@ export class PictureState {
   @Selector()
   static getState(state:PictureStateModel){
     return state;
+  }
+
+  @Selector()
+  static getPicture(state:PictureStateModel){
+    
+    return state.picture;
   }
 
 }

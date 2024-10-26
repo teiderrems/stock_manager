@@ -31,4 +31,9 @@ export class UserService {
   deleteUser(id:number):Observable<any>{
     return this.http.delete(this.constantService.getBaseUrl()+`users/${id}`);
   }
+
+  getUserByUsername(username:string):Observable<User>{
+    
+    return this.http.get<User>(this.constantService.getBaseUrl()+`users/${username}`);
+  }
 }

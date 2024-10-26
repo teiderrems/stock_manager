@@ -13,16 +13,11 @@ export const responseInterceptor: HttpInterceptorFn = (req, next) => {
   const refreshToken=store.selectSignal(AuthState.getRefreshToken);
   return next(req).pipe(
     map((event: HttpEvent<any>) => {
-      if (event instanceof HttpResponse) {
-        
-        console.log('Response intercepted:', event);
-        
-      }
       return event;
     }),
     catchError((error: HttpErrorResponse) => {
 
-      if (error.status==401 || error.message.includes("Unauthorize")) {
+      if (error.status==401 || error.message.includes("Unauthorized")) {
 
         exhaustMap(()=>store.dispatch(new RefreshTokenAction({refreshToken:refreshToken()})));
       }

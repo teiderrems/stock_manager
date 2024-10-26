@@ -67,3 +67,4 @@ export class ForgotPasswordAction{
 
   constructor(public payload:string){}
 }
+

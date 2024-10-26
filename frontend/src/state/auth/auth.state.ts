@@ -55,8 +55,8 @@ export class AuthState {
   }
 
   @Action(AuthAction.RegisterAction)
-  register(ctx: StateContext<AuthStateModel>, { payload }: AuthAction.LoginAction) {
-    return this.authService.login(payload).pipe(
+  register(ctx: StateContext<AuthStateModel>, { payload }: AuthAction.RegisterAction) {
+    return this.authService.register(payload).pipe(
       exhaustMap(()=>ctx.dispatch([
         AuthAction.UpdateSuccessAction,
         ,AuthAction.UpdateLoadingAction])),
@@ -192,4 +192,10 @@ export class AuthState {
   public static getState(state:AuthStateModel){
     return state;
   }
+
+  @Selector()
+  static isAuthenticate(state:AuthStateModel):boolean{
+
+    return state.data.accessToken.length>0?true:false;
+  } 
 }

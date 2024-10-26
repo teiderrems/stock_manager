@@ -50,3 +50,13 @@ export class UpdateSuccessAction{
 export class UpdateIsErrorAction{
   static readonly type="[User Page] Update IsError";
 }
+
+export class FetchUserWhoAuthenticate{
+  static readonly type="[CurrentUser API] Fetch User Who Is Authenticate";
+  constructor(public username:string){}
+}
+
+export class FetchUserSuccess{
+  static readonly type="[User Page] Fetch User Success";
+  constructor(public user:User){}
+}

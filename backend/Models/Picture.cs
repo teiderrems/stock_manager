@@ -12,8 +12,5 @@ namespace backend.Models
 
         [Required]
         public required byte[] Content { get; set; }
-
-
-        public Item? Item { get; set; }
     }
 }

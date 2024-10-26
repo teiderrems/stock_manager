@@ -1,6 +1,7 @@
 ﻿using backend.Data;
 using backend.Dto;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MR.AspNetCore.Pagination;
@@ -10,6 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/items")]
     [ApiController]
+    [AllowAnonymous]
     public class CommentController(ApplicationDbContext context, ILogger<CommentController> logger, IPaginationService paginationService) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;

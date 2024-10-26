@@ -16,7 +16,7 @@ namespace backend.Models
         [DataType(DataType.Date),DisplayName("Expiration Date")]
         public DateOnly? ExpirationAt { get; set; }
 
-        public List<Picture>? Pictures { get; set; }
+        public Picture? Image { get; set; }
 
         public List<Comment>? Comments { get; set; }
 

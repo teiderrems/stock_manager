@@ -1,1 +1,23 @@
-<p>login works!</p>
+<div class="flex justify-center items-center h-full bg-gray-500">
+  <nz-card class=" shadow-md" nzTitle="Login to continue">
+
+    <form nz-form [formGroup]="login"  class="flex flex-col space-y-4"   (ngSubmit)="isSubmit.set(true);submitForm()">
+      <div class="flex flex-col space-y-2 dark:text-gray-300 text-black">
+          <label for="email" class="leading-5">Email</label>
+          <input class="form-input" required  [email]="true" formControlName="email"  type="email" name="email" id="email">
+      </div>
+
+      <div class="flex flex-col space-y-2 dark:text-gray-300 text-black">
+        <label for="password" class="leading-5">Password</label>
+        <input class="form-input" required [pattern]="'[A-Za-z0-9,;/!/@]{1,}[,;/!/@]*'"   [minlength]="8" formControlName="password" type="password" name="password" id="password">
+      </div>
+      <div class="flex flex-col space-y-2">
+        <button nz-button nzType="primary" [nzLoading]="isSubmit()" [disabled]="login.invalid" >SignIn</button>
+        <span>You don't have account <a routerLink="/register">Register</a></span>
+      </div>
+    </form>
+    
+  </nz-card>
+</div>
+
+    

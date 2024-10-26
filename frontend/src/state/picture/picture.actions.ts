@@ -27,7 +27,16 @@ export class PostPictureAction{
 
   static readonly type="[Picture API] Add New Picture";
 
-  constructor(public picture:FormData){}
+  constructor(public picture:FormData){
+    console.log("AddPicture");
+  }
+}
+
+export class LoadLastPostPictureAction{
+
+  static readonly type="[Picture API] Load Last Post Picture";
+
+  constructor(public id:number){}
 }
 
 

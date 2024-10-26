@@ -1,30 +1,90 @@
+<nz-layout class="h-screen overflow-hidden" >
+  <!-- @if (!(router.url.includes("register") || router.url.includes("login"))) { -->
+  <nz-sider
+    class="hidden sm:block text-black dark:text-white"
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null"
+  >
+    <div class="logo">Store Management</div>
+    <app-nav-bar />
+  </nz-sider>
+  <nz-drawer
+    [nzClosable]="true"
+    [nzVisible]="visible"
+    [nzPlacement]="'left'"
+    nzTitle="Store Management"
+    (nzOnClose)="close()"
+    [nzWidth]="'75%'"
+    [nzOffsetY]="50"
+  >
+    <ng-container *nzDrawerContent>
+      <nav>
+        <a
+          routerLink="/home"
+          class="flex space-x-2 items-center leading-10"
+          (click)="close()"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{ exact: true }"
+          mat-fab
+          aria-label="Example icon button with a add icon"
+        >
+          <span class="">Home</span>
+        </a>
+        <a
+          routerLink="/items"
+          routerLinkActive="active"
+          (click)="close()"
+          ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Items</a
+        >
+      </nav>
+      <nz-footer>
+        <nz-switch [(ngModel)]="switchValue"></nz-switch>
+      </nz-footer>
+    </ng-container>
+  </nz-drawer>
+  <!-- } -->
+  <nz-layout class="overflow-hidden h-full w-full grid grid-rows-12">
+    <nz-header [classList]="' bg-white flex justify-between items-center px-4'">
+      <!-- @if (!(router.url.includes("register") || router.url.includes("login"))) { -->
+      <div class="flex flex-col my-2">
+        <h5 class="sm:hidden block p-2">
+          <button nz-button class="drawer" (click)="open()">
+            @if (visible) {
 
-<div class="h-screen grid sm:grid-cols-12 sm:grid-rows-6 overflow-hidden grid-cols-2 grid-rows-6">
-  <section class="sidebar">
-      <div>
-        <app-nav-bar/>
+            <span nz-icon nzType="close" nzTheme="outline"></span>
+            } @else {
+            <span nz-icon nzType="menu" nzTheme="outline"></span>
+            }
+          </button>
+        </h5>
+        <nz-breadcrumb
+          class=" hidden sm:inline pl-2"
+          [nzAutoGenerate]="true"
+        >
+          <nz-breadcrumb-item>Dashbord</nz-breadcrumb-item>
+        </nz-breadcrumb>
       </div>
-      <div class="footer">
-        <app-footer/>
-      </div>
-  </section>
-  <div class="header">
-      <app-header/>
-  </div>
-  <main>
-    @if (items$().data.length>0) {
-      <h1>{{ items$().data[0]}}</h1>
+      <app-profile />
+
+      <ng-template #profile>
+        <app-profile />
+      </ng-template>
+
+      <ng-template #navbar>
+        <app-profile />
+      </ng-template>
+    </nz-header>
+    <nz-content
+      class="overflow-y-auto row-span-10 row-start-2 row-end-11 h-full"
+    >
+      <div class="h-full"><router-outlet /></div>
+    </nz-content>
+    @if (!(router.url.includes("register") || router.url.includes("login"))) {
+    <nz-footer [hidden]="">Ant Design ©2020 Implement By Angular</nz-footer>
     }
-    @else {
-      <h1>hello</h1>
-    }
-    <router-outlet />
-  
-  </main>
-  <div class="footer2">
-    <app-footer/>
-  </div>
-</div>
-
-
-
+  </nz-layout>
+</nz-layout>

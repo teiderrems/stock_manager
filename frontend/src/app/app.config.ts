@@ -14,6 +14,7 @@ import { PictureState } from '../state/picture/picture.state';
 import { responseInterceptor } from '../../_interceptors/response.interceptor';
 import { requestInterceptor } from '../../_interceptors/request.interceptor';
 
+
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
     provideHttpClient(withFetch(),
@@ -21,5 +22,5 @@ export const appConfig: ApplicationConfig = {
   ),
     provideAnimationsAsync(), provideStore([ItemState,AuthState,CommentState,CategorieState,PictureState],
     withNgxsReduxDevtoolsPlugin()) 
-  ]
+  ],
 };

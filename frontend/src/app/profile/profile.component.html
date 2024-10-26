@@ -1,10 +1,25 @@
-<div class="profile"  mat-button [matMenuTriggerFor]="beforeMenu">
-    <img  src="images/profile.jpg"  alt="profile">
-    <h5 class="text-sm font-sans">John Doe</h5>
+<div class="profile">
+  @if (isAuthenticate()) {
+    <a routerLink="#" class="flex space-x-2" nz-dropdown [nzDropdownMenu]="menu">
+      <img src="images/profile.jpg" alt="profile" />
+      <h5 class="text-sm font-sans">John Doe</h5>
+      <span nz-icon nzType="down"></span>
+    </a>
+  }
+  @else {
+    <nav class="flex space-x-3 mr-5">
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/register" routerLinkActive="active">Register</a>
+    </nav>
+  }
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item>1st menu item</li>
+      <li nz-menu-item>2nd menu item</li>
+      <li nz-menu-divider></li>
+      <li nz-menu-item nzDisabled>3rd menu item（disabled）</li>
+    </ul>
+  </nz-dropdown-menu>
+  <!-- <img  src="images/profile.jpg"  alt="profile">
+      <button nz-button nzType="text">Text Button</button> -->
 </div>
-
-<!-- <button mat-button [matMenuTriggerFor]="beforeMenu">Before</button> -->
-<mat-menu #beforeMenu="matMenu" xPosition="before" panelClass="backgroundColor:#ff0000">
-    <button mat-menu-item>profile</button>
-    <button mat-menu-item>logOut</button>
-</mat-menu>

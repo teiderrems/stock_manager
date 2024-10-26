@@ -44,9 +44,9 @@ export class ItemState {
   }
 
   @Action(LoadItemAction)
-  loadItem(ctx: StateContext<ItemStateModel>){
+  loadItem(ctx: StateContext<ItemStateModel>,{page,limit}:LoadItemAction){
     
-    return this.itemService.getAllItem().pipe(
+    return this.itemService.getAllItem(page,limit).pipe(
       mergeMap(items=>ctx.dispatch([new LoadSuccessAction(items),UpdateSuccessAction,UpdateLoadingAction])),
       catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
       

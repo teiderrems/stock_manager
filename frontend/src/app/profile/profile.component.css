@@ -1,7 +1,11 @@
 img{
-    @apply rounded-full w-10 h-10 sm:w-12 sm:h-12
+    @apply rounded-full w-6 h-6
 }
 
 .profile{
     @apply flex space-x-2 items-center hover:cursor-pointer
+}
+
+a{
+    @apply  text-black
 }

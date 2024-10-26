@@ -6,6 +6,11 @@ export interface Categorie{
     description?:string;
 }
 
+export interface CreateCategorie{
+    name?:string | null;
+    description?:string | null;
+}
+
 export interface Comment{
 
     id:number;
@@ -22,8 +27,8 @@ export interface CreateComment{
 export interface Login{
     email:string;
     password:string;
-    twoFactorCode?:string;
-    twoFactorRecoveryCode?:string
+    // twoFactorCode?:string;
+    // twoFactorRecoveryCode?:string
 }
 
 export interface Register{
@@ -41,7 +46,7 @@ export interface Item{
     id?:number;
     name?:string;
     description?:string;
-    imageUrl?:string[];
+    imageUrl?:string;
     createdAt?:Date;
     updatedAt?:Date;
     expirationDate?:Date;
@@ -54,8 +59,8 @@ export interface Item{
 
 
 export interface User{
-    id:number;
-    username:string;
+    id?:number;
+    username?:string;
     firstname?:string;
     lastname?:string;
     email?:string;
@@ -158,24 +163,23 @@ export interface UpdateUser{
 }
 
 export interface CreateItem{
-    Name:string;
-    Description?:string;
-    Categories:string[];
-    ExpirationAt:Date;
-    Pictures:string[];
-    StockQuantity:number;
-    MinPrice:number;
-    Price:number;
-    MaxPrice:number;
+    name?:string;
+    description?:string;
+    categories?:number[];
+    expirationAt?:Date;
+    picture?:number;
+    stockQuantity?:number;
+    minPrice?:number;
+    maxPrice?:number;
 }
 
 export interface UpdateItem{
-    Id:number;
-    Description?:string;
-    StockQuantity:number;
-    MinPrice:number;
-    Price:number;
-    MaxPrice:number;
+    id:number;
+    description?:string;
+    stockQuantity:number;
+    minPrice:number;
+    price:number;
+    maxPrice:number;
 }
 
 export interface RefreshToken{

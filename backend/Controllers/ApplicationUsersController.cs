@@ -42,10 +42,27 @@ namespace backend.Controllers
         }
 
         // GET: api/ApplicationUsers/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<UserDto>> GetApplicationUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
+                               GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
+                               GetRoles(user.Roles!), user.PhoneNumber);
+        }
+
+        // GET: api/ApplicationUsers/remi
+        
+        [HttpGet("{username}")]
+        public async Task<ActionResult<UserDto>> GetApplicationUserByUsername(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u=>u.UserName==username);
 
             if (user == null)
             {
@@ -70,7 +87,7 @@ namespace backend.Controllers
             var user=await _context.Users.FindAsync(id);
             if (user!.Profil!.Id!=applicationUser.PictureId)
             {
-                var picture = await _context.Pictures.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
+                var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
                 user.Profil=picture;
             }
 
@@ -113,6 +130,9 @@ namespace backend.Controllers
             return NoContent();
         }
 
+
+
+
         // POST: api/ApplicationUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -129,7 +149,7 @@ namespace backend.Controllers
                 _context.Roles.Add(appRole);
                 role=appRole;
             }
-            var picture = await _context.Pictures.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
+            var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
 
             var user=new ApplicationUser{
                 Roles=[],

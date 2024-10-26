@@ -1,58 +1,94 @@
-import { Component, inject, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
+import {
+  afterRender,
+  Component,
+  inject,
+  OnChanges,
+  OnInit,
+  signal,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import {MatTabsModule} from '@angular/material/tabs';
-import { HeaderComponent } from "./header/header.component";
-import { FooterComponent } from "./footer/footer.component";
-import { NavBarComponent } from "./nav-bar/nav-bar.component";
-// import { Store } from '@ngrx/store';
-// import { CounterIncrementAction } from '../store/actions/counter.action';
-import { Observable } from 'rxjs';
-import { Item } from '../interfaces';
-// import ItemsAction from '../store/actions/items.action';
-import { ItemService } from './item/item.service';
-import { Store } from '@ngxs/store';
-import { LoadItemAction } from '../state/item/item.actions';
-import { ItemState } from '../state/item/item.state';
-// import { ItemsSelector } from '../store/selectors/items.selector';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
+import { LogoComponent } from './logo/logo.component';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { CapitalizePipe } from './capitalize.pipe';
+import { ProfileComponent } from './profile/profile.component';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatTabsModule, HeaderComponent, 
-    FooterComponent, NavBarComponent,RouterLink, RouterLinkActive,
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    NzIconModule,
+    FooterComponent,
+    NavBarComponent,
+    NzDrawerModule,
+    RouterLink,
+    RouterLinkActive,
+    LogoComponent,
+    NzLayoutModule,
+    NzBreadCrumbModule,
+    CapitalizePipe,
+    ProfileComponent,
+    NzButtonModule,
+    NzSwitchModule,
+    FormsModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
-export class AppComponent implements OnInit{
-
-  // items$:Observable=this
+export class AppComponent implements OnInit {
+  visible: boolean = false;
   
+  switchValue = false;
+  open(): void {
+    this.visible = true;
+  }
+
+  close(): void {
+    this.visible = false;
+  }
 
   ngOnInit(): void {
-    
-    this.getAllItems();
+    this.titleService.setTitle('App component');
   }
 
-  // loadItems(){
-  //   this.store.dispatch(ItemsAction.loadItems())
-  // }
+  isCollapsed = false;
+  private readonly titleService: Title = inject(Title);
+  public readonly router = inject(Router);
 
-  private readonly titleService:Title=inject(Title)
-  // private readonly itemService:ItemService=inject(ItemService)
-
-
-  getAllItems(){
-    this.store.dispatch(LoadItemAction);
-  }
-
-  
-  private readonly store=inject(Store);
-  
   title = signal<string>('frontend');
-  // constructor(private readonly store:Store){}
 
-  public items$=this.store.selectSignal(ItemState.getItems);
-
+  constructor(){
+    // afterRender({
+    //   write:()=>{
+    //     // this.titleService.setTitle('App component');
+    //     // if (this.isAuthenticate()) {
+    //     //   this.viewRef.createEmbeddedView(this.profile)
+    //     // }
+    //     // else{
+    //     //   this.viewRef.createEmbeddedView(this.navbar)
+    //     // }
+    //     console.log(this.store);
+    //   }
+    // })
+  }
 }

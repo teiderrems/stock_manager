@@ -10,7 +10,7 @@ namespace backend.Data
 
         public DbSet<Item> Items { get; set; } = default!;
 
-        public DbSet<Picture> Pictures { get; set; }= default!;
+        public DbSet<Picture> Images { get; set; }= default!;
 
         public DbSet<Comment> Comments { get; set; }=default!;
 
@@ -27,9 +27,18 @@ namespace backend.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Categorie>().HasIndex(c => c.Name).IsUnique();
-            builder.Entity<Picture>().HasIndex(c => c.FileName).IsUnique();
+            builder.Entity<Item>()
+            .Navigation(p=>p.Image);
 
-            builder.Entity<ApplicationUser>().HasAlternateKey(u => new {u.Firstname,u.Lastname});
+            builder.Entity<Item>()
+            .Navigation<Categorie>(p=>p.Categories);
+
+            builder.Entity<Item>()
+            .Navigation<Comment>(p=>p.Comments);
+
+            builder.Entity<Item>()
+            .HasIndex(c => c.Name).IsUnique();
+            builder.Entity<Picture>().HasIndex(c => c.FileName).IsUnique();
 
             base.OnModelCreating(builder);
         }

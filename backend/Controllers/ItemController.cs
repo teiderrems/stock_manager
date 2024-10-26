@@ -11,6 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/items")]
     [ApiController]
+    [Authorize]
     public class ItemController(ApplicationDbContext context, ILogger<ItemController> logger, IPaginationService paginationService) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
@@ -19,41 +20,44 @@ namespace backend.Controllers
         private readonly IPaginationService _paginationService = paginationService;
 
         [HttpGet(Name = "List Item")]
+        [AllowAnonymous]
         public async Task<ActionResult<KeysetPaginationResult<ItemDto>>> GetAllItem()
         {
-            
-            _logger.LogInformation("Item List");
 
-            var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x =>x.Name));//.Descending(x => x.Id)
+            var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
+            _logger.LogInformation("Item List");
+            var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x => x.Name));//.Descending(x => x.Id)
             var itemsPaginationResult = await _paginationService.KeysetPaginateAsync(
                 _context.Items,
                 _itemsKeysetQuery,
                 async id => await _context.Items.FindAsync(int.Parse(id)),
-                query=>query.Select((item) => new ItemDto(
+                query => query.Select((item) => new ItemDto(
                     item.Id, item.Name,
                     item.StockQuantity,
                     item.MinPrice,
                     item.MaxPrice,
                     item.Description,
-                    GetPictureUrl(item, HttpContext),
+                    $"{imageUrl}{item.Image!.Id}",
                     item.Categories, item.Comments,
                     item.CreatedAt, item.UpdatedAt, item.ExpirationAt))
                 );
-
             return itemsPaginationResult;
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ItemDto>> GetItemById(int id)
         {
             try
             {
+                var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
                 var item = await _context.Items.FindAsync(id);
-                return item!=null? new ItemDto(item.Id, item.Name,
+                
+                return item != null ? new ItemDto(item.Id, item.Name,
                     item.StockQuantity,
                     item.MinPrice,
                     item.MaxPrice,
-                    item.Description, GetPictureUrl(item,HttpContext),
+                    item.Description, $"{imageUrl}{item.Image!.Id}",
                     item.Categories, item.Comments,
                     item.CreatedAt, item.UpdatedAt, item.ExpirationAt) : NotFound();
             }
@@ -65,43 +69,41 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> AddItem(CreateItemDto item)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            // var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            // if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
+            // {
+            //     return Unauthorized();
+            // }
             if (item == null)
             {
                 return NotFound();
             }
-            List<Categorie> categories=[];
-            List<Picture> pictures=[];
+            List<Categorie> categories = [];
 
-            item.Categories!.ForEach(c=>{
+            item.Categories!.ForEach(c =>
+            {
                 categories.Add(_context.Categories.Find(c)!);
             });
-            item.Pictures!.ForEach(p=>{
-                pictures.Add(_context.Pictures.Find(p)!);
-            });
 
-            var newItem=new Item{
-                Name=item.Name,
-                Pictures=pictures,
-                Categories=categories,
-                Comments=[],
-                Description=item.Description,
-                ExpirationAt=item.ExpirationAt,
-                StockQuantity=item.StockQuantity,
-                MinPrice=item.MinPrice,
-                Price=0.0,
-                MaxPrice=item.MaxPrice
+            var newItem = new Item
+            {
+                Name = item.Name,
+                Image = await _context.Images.FindAsync(item.Picture),
+                Categories = categories,
+                Comments = [],
+                Description = item.Description,
+                ExpirationAt = item.ExpirationAt,
+                StockQuantity = item.StockQuantity,
+                MinPrice = item.MinPrice,
+                Price = 0.0,
+                MaxPrice = item.MaxPrice
             };
 
             try
-            { 
+            {
                 _context.Items.Add(newItem);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -113,8 +115,8 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [Authorize]
-        public async Task<ActionResult<Item>> UpdateItem( int id,UpdateItemDto item)
+
+        public async Task<ActionResult<Item>> UpdateItem(int id, UpdateItemDto item)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
             if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
@@ -125,20 +127,20 @@ namespace backend.Controllers
             {
                 return BadRequest();
             }
-            
+
             try
             {
-                if (item.Id==id)
+                if (item.Id == id)
                 {
-                    var oldItem=_context.Items.Find(id);
-                    oldItem!.Description=oldItem.Description==item.Description?oldItem.Description:item.Description;
-                    oldItem.StockQuantity=oldItem.StockQuantity==item.StockQuantity?oldItem.StockQuantity:item.StockQuantity;
-                    oldItem.MinPrice=oldItem.MinPrice==item.MinPrice?oldItem.MinPrice:item.MinPrice;
-                    oldItem.Price=oldItem.Price==item.Price?oldItem.Price:item.Price;
-                    oldItem.MaxPrice=oldItem.MaxPrice==item.MaxPrice?oldItem.MaxPrice:item.MaxPrice;
-                    oldItem.UpdatedAt=DateTime.Now;
-                
-                    var result=_context.Items.Update(oldItem);
+                    var oldItem = _context.Items.Find(id);
+                    oldItem!.Description = oldItem.Description == item.Description ? oldItem.Description : item.Description;
+                    oldItem.StockQuantity = oldItem.StockQuantity == item.StockQuantity ? oldItem.StockQuantity : item.StockQuantity;
+                    oldItem.MinPrice = oldItem.MinPrice == item.MinPrice ? oldItem.MinPrice : item.MinPrice;
+                    oldItem.Price = oldItem.Price == item.Price ? oldItem.Price : item.Price;
+                    oldItem.MaxPrice = oldItem.MaxPrice == item.MaxPrice ? oldItem.MaxPrice : item.MaxPrice;
+                    oldItem.UpdatedAt = DateTime.Now;
+
+                    var result = _context.Items.Update(oldItem);
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
@@ -147,13 +149,14 @@ namespace backend.Controllers
                     return BadRequest();
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex);
             }
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize]
+
         public async Task<IActionResult> DeleteItem(int id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
@@ -175,21 +178,29 @@ namespace backend.Controllers
                 _logger.LogInformation(result.ToString());
                 return Ok(result);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex.Message);
                 return NotFound(ex);
             }
         }
 
-        private static string[] GetPictureUrl(Item item,HttpContext httpContext)
-        {
-            var imageUrl = $"{httpContext.Request.Protocol.Split('/')[0]}://{httpContext.Request.Host}/api/pictures/";
-            List<string> ImageUrlList = [];
-            if (item != null && item.Pictures != null)
-            {
-                item.Pictures.ForEach(p => ImageUrlList.Add($"{imageUrl}{p!.Id}"));
-            }
-            return [..ImageUrlList];
-        }
+        // private static string[] GetImageUrl(Item item, HttpContext httpContext)
+        // {
+        //     List<string> ImageUrlList = [];
+        //     if (item.Images != null)
+        //     {
+        //         item.Images.ForEach(p => System.Console.WriteLine(p.Id));
+        //         var imageUrl = $"{httpContext.Request.Protocol.Split('/')[0]}://{httpContext.Request.Host}/api/pictures/";
+
+        //         if (item != null && item.Images != null)
+        //         {
+        //             item.Images.ForEach(p => ImageUrlList.Add($"{imageUrl}{p!.Id}"));
+        //         }
+        //         return [.. ImageUrlList];
+        //     }
+        //     System.Console.WriteLine("Image empty");
+        //     return [.. ImageUrlList];
+        // }
     }
 }
