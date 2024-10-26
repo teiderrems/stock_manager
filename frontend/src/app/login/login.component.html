@@ -9,7 +9,7 @@
 
       <div class="flex flex-col space-y-2 dark:text-gray-300 text-black">
         <label for="password" class="leading-5">Password</label>
-        <input class="form-input" required [pattern]="'[A-Za-z0-9,;/!/@]{1,}[,;/!/@]*'"   [minlength]="8" formControlName="password" type="password" name="password" id="password">
+        <input class="form-input" required   [minlength]="8" formControlName="password" type="password" name="password" id="password">
       </div>
       <div class="flex flex-col space-y-2">
         <button nz-button nzType="primary" [nzLoading]="isSubmit()" [disabled]="login.invalid" >SignIn</button>

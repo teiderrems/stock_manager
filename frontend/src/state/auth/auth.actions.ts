@@ -1,4 +1,4 @@
-import { Login, LoginResponseBody, RefreshToken, Register, ResetPassword } from "../../interfaces";
+import { Login, LoginResponseBody, RefreshToken, Register, ResetPassword, User } from "../../interfaces";
 
 export class LoginAction {
 
@@ -22,12 +22,31 @@ export class RefreshTokenAction {
   
 }
 
+export class ResetBooleanField{
+  static readonly type="[Auth State] Reset Boolean Fields";
+}
+
+export class LogOutAction{
+
+  static readonly type="[Profile Page] Delete User Credentials";
+}
 
 export class RefreshTokenSuccessAction {
 
   static readonly type = '[Login API] Auto-Re-Authentication Success';
   constructor(public payload: LoginResponseBody) { }
 
+}
+
+export class AuthenticateUserSuccess{
+  static readonly type="[Auth API] Update CurrentUser";
+  constructor(public user:User){}
+}
+
+export class AuthenticateUser{
+
+  static readonly type="[Auth API] Fetch Authenticate User";
+  constructor(public username:string){}
 }
 
 

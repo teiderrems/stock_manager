@@ -25,6 +25,10 @@ export class PostCategorieAction{
   constructor(public categorie:CreateCategorie){}
 }
 
+export class ResetBooleanField{
+  static readonly type="[Categorie State] Reset Boolean Fields";
+}
+
 
 export class PutCategorieAction{
   static readonly type="[Categorie API] Update Categorie Identify By Id";

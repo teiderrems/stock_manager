@@ -131,23 +131,19 @@ namespace backend.Controllers
                 {
                     // Le FileStream est maintenant un stream que tu peux utiliser
                     // Par exemple, lire le contenu du fichier :
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        
-                        await fileStream.CopyToAsync(memoryStream);
-                        return memoryStream.ToArray();
-                    }
+                    using var memoryStream = new MemoryStream();
+
+                    await fileStream.CopyToAsync(memoryStream);
+                    return memoryStream.ToArray();
                     // Ou, si tu veux juste manipuler le stream, tu peux le passer à d'autres méthodes qui attendent un Stream.
                 }
             }
             else
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    
-                    await formFile.CopyToAsync(memoryStream);
-                    return memoryStream.ToArray();
-                }
+                using var memoryStream = new MemoryStream();
+
+                await formFile.CopyToAsync(memoryStream);
+                return memoryStream.ToArray();
             }
         }
     }

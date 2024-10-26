@@ -43,6 +43,7 @@ namespace backend.Controllers
 
         // GET: api/ApplicationUsers/5
         [HttpGet("{id:int}")]
+        // [AllowAnonymous]
         public async Task<ActionResult<UserDto>> GetApplicationUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -60,6 +61,7 @@ namespace backend.Controllers
         // GET: api/ApplicationUsers/remi
         
         [HttpGet("{username}")]
+        // [AllowAnonymous]
         public async Task<ActionResult<UserDto>> GetApplicationUserByUsername(string username)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u=>u.UserName==username);
@@ -68,10 +70,11 @@ namespace backend.Controllers
             {
                 return NotFound();
             }
+            System.Console.WriteLine(user);
 
             return new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
                                GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
-                               GetRoles(user.Roles!), user.PhoneNumber);
+                               GetRoles(user.Roles), user.PhoneNumber);
         }
 
         // PUT: api/ApplicationUsers/5
@@ -91,7 +94,7 @@ namespace backend.Controllers
                 user.Profil=picture;
             }
 
-            var roles=GetRoles(user.Roles!);
+            var roles=GetRoles(user.Roles);
             applicationUser.Roles!.ForEach(r=>{
 
                 if(!isIn(roles,r)){
@@ -197,15 +200,18 @@ namespace backend.Controllers
             if (picture != null)
             {
                 imageUrl+= $"{picture.Id}";
+                return imageUrl;
             }
-            return imageUrl;
+            return "";
         }
 
-        private static List<string> GetRoles(List<ApplicationUserRole> roles)
+        private static List<string> GetRoles(List<ApplicationUserRole>? roles)
         {
             List<string> roleList = [];
-            foreach (var role in roles) {
-                roleList.Add(role.Name!);
+            if(roles!=null && roles.Count>0){
+                foreach (var role in roles) {
+                    roleList.Add(role.Name!);
+                }
             }
             return roleList;
         }

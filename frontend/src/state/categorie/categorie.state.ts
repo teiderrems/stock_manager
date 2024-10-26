@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { LoadSuccessAction,UpdateIsErrorAction,LoadCategorieAction, ActionOnCategorieFailled, PostCategorieAction,PutCategorieAction,DeleteCategorieAction, UpdateLoadingAction, UpdateSuccessAction } from './categorie.actions';
+import { LoadSuccessAction,UpdateIsErrorAction,LoadCategorieAction, ActionOnCategorieFailled, PostCategorieAction,PutCategorieAction,DeleteCategorieAction, UpdateLoadingAction, UpdateSuccessAction, ResetBooleanField } from './categorie.actions';
 import { Categorie } from '../../interfaces';
 import { CategorieService } from '../../app/categorie/categorie.service';
 import { catchError,mergeMap } from 'rxjs/operators';
@@ -41,8 +41,8 @@ export class CategorieState {
   loadCategorie(ctx: StateContext<CategorieStateModel>){
     
     return this.categorieService.getAllCategorie().pipe(
-      mergeMap(Categories=>ctx.dispatch([new LoadSuccessAction(Categories),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
+      mergeMap(Categories=>ctx.dispatch([ResetBooleanField,new LoadSuccessAction(Categories),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
       
     );
   }
@@ -60,8 +60,8 @@ export class CategorieState {
   addNewCategorie(ctx:StateContext<CategorieStateModel>,{categorie}:PostCategorieAction){
 
     return this.categorieService.addCategorie(categorie).pipe(
-      mergeMap(()=>ctx.dispatch([LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
       
     );
   }
@@ -71,8 +71,8 @@ export class CategorieState {
   updateCategorie(ctx:StateContext<CategorieStateModel>,{Categorie,id}:PutCategorieAction){
 
     return this.categorieService.updateCategorie(id,Categorie).pipe(
-      mergeMap(()=>ctx.dispatch([LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
       
     );
   }
@@ -81,8 +81,8 @@ export class CategorieState {
   deleteCategorie(ctx:StateContext<CategorieStateModel>,{id}:DeleteCategorieAction){
     return this.categorieService.deleteCategorie(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadCategorieAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCategorieFailled(error.message,error.status)])),
       
     )
   }

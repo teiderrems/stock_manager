@@ -1,0 +1,15 @@
+[nz-carousel-content] {
+    text-align: center;
+    /* height: 100%; */
+    /* line-height: 160px; */
+    background: #2e3b52;
+    color: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    /* padding: 10px; */
+    justify-items: center;
+    align-content: center;
+
+    
+  }

@@ -13,6 +13,7 @@ import { CategorieState } from '../state/categorie/categorie.state';
 import { PictureState } from '../state/picture/picture.state';
 import { responseInterceptor } from '../../_interceptors/response.interceptor';
 import { requestInterceptor } from '../../_interceptors/request.interceptor';
+import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 
 
 export const appConfig: ApplicationConfig = {
@@ -21,6 +22,9 @@ export const appConfig: ApplicationConfig = {
   withInterceptors([requestInterceptor,responseInterceptor])
   ),
     provideAnimationsAsync(), provideStore([ItemState,AuthState,CommentState,CategorieState,PictureState],
+      withNgxsStoragePlugin({
+        keys: ['auth']
+      }),
     withNgxsReduxDevtoolsPlugin()) 
   ],
 };

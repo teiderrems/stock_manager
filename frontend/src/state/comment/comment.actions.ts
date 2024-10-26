@@ -19,6 +19,10 @@ export class ActionOnCommentFailled{
   constructor(public message:string,public status:number){}
 }
 
+export class ResetBooleanField{
+  static readonly type="[Comment State] Reset Boolean Fields";
+}
+
 
 export class PostCommentAction{
   static readonly type="[Comment API] Add New Comment";

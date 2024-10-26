@@ -14,6 +14,10 @@ export class LoadPictureAction {
   static readonly type = '[Picture API] Load Pictures';
 }
 
+export class ResetBooleanField{
+  static readonly type="[Picture State] Reset Boolean Fields";
+}
+
 
 export class ActionOnPictureFailled{
 

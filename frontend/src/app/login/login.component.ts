@@ -39,7 +39,6 @@ export class LoginComponent {
       .subscribe(value=>{
         this.isSubmit.set(false);
         this.router.navigateByUrl("/items");
-        console.log(this.authState());
       });
     }
 

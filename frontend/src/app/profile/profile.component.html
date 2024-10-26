@@ -1,9 +1,18 @@
 <div class="profile">
   @if (isAuthenticate()) {
-    <a routerLink="#" class="flex space-x-2" nz-dropdown [nzDropdownMenu]="menu">
-      <img src="images/profile.jpg" alt="profile" />
-      <h5 class="text-sm font-sans">John Doe</h5>
-      <span nz-icon nzType="down"></span>
+    <a routerLink="#" class="flex space-x-2 items-center" nz-dropdown [nzDropdownMenu]="menu">
+      @if(currentUser()!==undefined){
+        <h6 class="text-sm font-sans">{{currentUser()?.email}}</h6>
+        @if(!(!!currentUser()?.profile)){
+          <nz-avatar nzSize="large" nzIcon="user"></nz-avatar>
+        }
+        @else{
+          <!-- <img src={{currentUser()?.profile}} alt={{currentUser()?.email}} /> -->
+          <nz-avatar nzSize="large" [nzSrc]={{currentUser()?.profile}} [nzAlt]={{currentUser()?.email}}></nz-avatar>
+        }
+        
+        <span nz-icon nzType="down"></span>
+      }
     </a>
   }
   @else {
@@ -14,12 +23,11 @@
   }
   <nz-dropdown-menu #menu="nzDropdownMenu">
     <ul nz-menu>
-      <li nz-menu-item>1st menu item</li>
-      <li nz-menu-item>2nd menu item</li>
+      <li nz-menu-item>Profile</li>
+      <li nz-menu-item>Contact</li>
       <li nz-menu-divider></li>
-      <li nz-menu-item nzDisabled>3rd menu item（disabled）</li>
+      <li nz-menu-item (click)="logOut()">Logout</li>
+      <li nz-menu-item nzDisabled>About</li>
     </ul>
   </nz-dropdown-menu>
-  <!-- <img  src="images/profile.jpg"  alt="profile">
-      <button nz-button nzType="text">Text Button</button> -->
 </div>

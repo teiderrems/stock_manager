@@ -22,17 +22,7 @@ export class PictureComponent {
   load=output<File| undefined>();
 
   PostPicture(event: any) {
-    console.log(event);
-
     this.load.emit(event.file as File);
-    // if (event.file!== null) {
-    //   const formData = new FormData();
-    //   formData.append('picture', (event.file as File), event.file.filename);
-    //   this.store.dispatch(new PostPictureAction(formData));
-    //   if (this.isSuccess()) {
-    //     this.upload.emit(this.id());
-    //   }
-    // }
   }
   upload = output<number | undefined>();
 

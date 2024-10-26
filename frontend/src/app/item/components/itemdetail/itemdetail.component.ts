@@ -6,11 +6,12 @@ import { Item } from '../../../../interfaces';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { Store } from '@ngxs/store';
 import { AuthState } from '../../../../state/auth/auth.state';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
 @Component({
   selector: 'app-itemdetail',
   standalone: true,
-  imports: [NzCardModule,NzButtonModule,NzIconModule,NzImageModule],
+  imports: [NzCardModule,NzButtonModule,NzIconModule,NzImageModule,NzTypographyModule],
   templateUrl: './itemdetail.component.html',
   styleUrl: './itemdetail.component.css'
 })

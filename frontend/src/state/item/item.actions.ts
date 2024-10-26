@@ -51,3 +51,7 @@ export class UpdateSuccessAction{
 export class UpdateIsErrorAction{
   static readonly type="[Item Page] Update IsError";
 }
+
+export class ResetBooleanField{
+  static readonly type="[Item State] Reset Boolean Fields";
+}

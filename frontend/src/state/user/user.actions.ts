@@ -60,3 +60,18 @@ export class FetchUserSuccess{
   static readonly type="[User Page] Fetch User Success";
   constructor(public user:User){}
 }
+
+export class AuthenticateUserSuccess{
+  static readonly type="[User API] Update CurrentUser";
+  constructor(public user:User){}
+}
+
+export class AuthenticateUser{
+
+  static readonly type="[User API] Fetch Authenticate User";
+  constructor(public username:string){}
+}
+
+export class ResetBooleanField{
+  static readonly type="[User State] Reset Boolean Fields";
+}

@@ -14,11 +14,12 @@ import { AddItemComponent } from './components/add-item/add-item.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemdetailComponent } from "./components/itemdetail/itemdetail.component";
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzCarouselModule } from 'ng-zorro-antd/carousel';
 
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [AddItemComponent, NzIconModule, ItemdetailComponent,NzPaginationModule],
+  imports: [AddItemComponent, NzIconModule, ItemdetailComponent,NzPaginationModule,NzCarouselModule],
   templateUrl: './item.component.html',
   styleUrl: './item.component.css',
 })

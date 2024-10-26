@@ -12,14 +12,33 @@
   </div>
 
   <!-- <app-add-item/> -->
-  <main class="px-4 row-span-10 row-start-2 overflow-y-auto flex flex-wrap gap-5">
-    @if (items().data.length>0) { @for (item of items().data; track item.id) {
-      
-      <app-itemdetail [currentItem]="item"/>
-    } }
+  <main class="px-4 row-span-10 row-start-2 grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
+    <div class="row-span-3 row-start-1">
+      <nz-carousel [nzEffect]="'scrollx'" [nzAutoPlay]="true">
+        
+        @for (item of items().data; track item.id) {
+          <div nz-carousel-content class="">
+            <img
+            alt="{{ item?.name }}"
+            src="{{ item?.imageUrl }}"
+            class="h-5/6"
+          />
+        </div>
+      }
+      </nz-carousel>
+    </div>
+    <div class="row-span-3 grid sm:grid-cols-3 md:grid-cols-4 overflow-y-auto xl:grid-cols-6 gap-4 grid-rows-3">
+
+      @if (items().data.length>0) { 
+        <!-- @for (item of items().data; track item.id) {
+        
+          <app-itemdetail [currentItem]="item"/>
+        }  -->
+    }
+    </div>
   </main>
   <div class="row-span-1 px-4  flex justify-end items-center">
-    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="false" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="items().totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="items().pageSize"></nz-pagination>
+    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="true" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="items().totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="items().pageSize"></nz-pagination>
   </div>
 
   @if (open()) {
