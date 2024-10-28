@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import * as AuthAction from './auth.actions';
 import { LoginResponseBody, User } from '../../interfaces';
-import { AuthService } from '../../app/auth/auth.service';
+import { AuthService } from '../../app/account/auth/auth.service';
 import { catchError, exhaustMap } from 'rxjs';
 import { AuthenticateUser, AuthenticateUserSuccess } from './auth.actions';
-import { UserService } from '../../app/user/user.service';
+import { UserService } from '../../app/admin/user/user.service';
+
 
 export interface AuthStateModel {
   data: LoginResponseBody;
@@ -79,6 +80,7 @@ export class AuthState {
           AuthAction.ResetBooleanField,
           AuthAction.UpdateLoadingAction,
           new AuthenticateUserSuccess(value),
+          AuthAction.UpdateSuccessAction
         ])
       ),
       catchError((error) =>
@@ -110,7 +112,6 @@ export class AuthState {
         ctx.dispatch([
           AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
-          ,
           AuthAction.UpdateLoadingAction,
         ])
       ),
@@ -135,7 +136,6 @@ export class AuthState {
         ctx.dispatch([
           AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
-          ,
           AuthAction.UpdateLoadingAction,
         ])
       ),
@@ -159,17 +159,16 @@ export class AuthState {
       exhaustMap(() =>
         ctx.dispatch([
           AuthAction.ResetBooleanField,
-          AuthAction.UpdateSuccessAction,
-          ,
           AuthAction.UpdateLoadingAction,
+          AuthAction.UpdateSuccessAction
         ])
       ),
       catchError((error) =>
         ctx.dispatch([
           AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
-          AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,
+          AuthAction.UpdateIsErrorAction
         ])
       )
     );
@@ -185,7 +184,6 @@ export class AuthState {
         ctx.dispatch([
           AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
-          ,
           AuthAction.UpdateLoadingAction,
           new AuthAction.RefreshTokenSuccessAction(value),
         ])

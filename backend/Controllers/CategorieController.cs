@@ -1,4 +1,5 @@
 ﻿using backend.Data;
+using backend.Dto;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,11 @@ namespace backend.Controllers
     [Route("api/categories")]
     [ApiController]
     
-    public class CategorieController(ApplicationDbContext context, ILogger<CategorieController> logger) : ControllerBase
+    public class CategorieController(ApplicationDbContext context, ILogger<CategorieController> logger,IEmailSender _emailSender) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
         private readonly ILogger<CategorieController> _logger = logger;
+        private readonly IEmailSender _emailSender =_emailSender;
 
         [HttpGet(Name = "List Categorie")]
         public async Task<ActionResult<List<Categorie>>> GetAllCategorie()
@@ -37,14 +39,14 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+         [Authorize]
         public async Task<IActionResult> AddCategorie(Categorie categorie)
         {
-            // var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            // if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            // {
-            //     return Unauthorized();
-            // }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
+            {
+                return Unauthorized();
+            }
             if (categorie==null)
             {
                 return NotFound(); 

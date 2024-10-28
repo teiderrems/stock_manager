@@ -16,6 +16,6 @@ namespace backend.Models
 
         public Picture? Profil { get; set; }
 
-        public List<ApplicationUserRole>? Roles { get; set; }
+        public List<IdentityRole<int>>? Roles { get; set; }
     }
 }

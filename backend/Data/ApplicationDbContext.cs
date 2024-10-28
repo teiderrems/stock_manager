@@ -1,10 +1,11 @@
 ﻿using backend.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationUserRole,int>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<int>,int>(options)
     {
         public DbSet<Categorie> Categories { get; set; } = default!;
 
@@ -15,8 +16,6 @@ namespace backend.Data
         public DbSet<Comment> Comments { get; set; }=default!;
 
         public DbSet<Bill> Bills { get; set; }
-
-        public override DbSet<ApplicationUserRole> Roles {  get; set; }
 
 
         public override DbSet<ApplicationUser> Users {  get; set; } = default!;
@@ -39,6 +38,15 @@ namespace backend.Data
             builder.Entity<Item>()
             .HasIndex(c => c.Name).IsUnique();
             builder.Entity<Picture>().HasIndex(c => c.FileName).IsUnique();
+
+            builder.Entity<IdentityRole>()
+            .HasIndex(r=>r.Name)
+            .IsUnique();
+
+            builder.Entity<ApplicationUser>().HasMany(u=>u.Roles)
+            .WithMany();
+
+            builder.Entity<ApplicationUser>().HasIndex(u=>u.Email).IsUnique();
 
             base.OnModelCreating(builder);
         }

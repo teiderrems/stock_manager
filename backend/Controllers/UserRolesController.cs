@@ -1,6 +1,7 @@
 ﻿using backend.Data;
 using backend.Dto;
 using backend.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ namespace backend.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApplicationUserRole>> GetRoleById(int id)
+        public async Task<ActionResult<IdentityRole<int>>> GetRoleById(int id)
         {
             var role=await _context.Roles.FindAsync(id);
             if (role == null) { 
@@ -40,8 +41,13 @@ namespace backend.Controllers
 
         // POST api/<ValuesController>
         [HttpPost]
-        public async Task<ActionResult<RoleDto>> Post(ApplicationUserRole role)
+        public async Task<ActionResult<RoleDto>> Post(IdentityRole<int> role)
         {
+            var temp=_context.Roles.FirstOrDefault(r=>r.Name==role.Name);
+            if (temp!=null)
+            {
+                return CreatedAtAction(nameof(GetRoleById), new { id=temp.Id }, new RoleDto(temp));
+            }
             _context.Roles.Add(role);
             try
             {

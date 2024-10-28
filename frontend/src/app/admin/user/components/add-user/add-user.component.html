@@ -1,0 +1,130 @@
+<nz-modal
+  [nzVisible]="isVisible()"
+  nzTitle="Add New User"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzOkText]="null"
+  [nzCancelText]="null"
+  [nzMask]="isVisible()"
+  [nzClosable]="isVisible()"
+  [nzFooter]="null"
+>
+  <ng-container *nzModalContent>
+    <!-- <nz-card class="shadow-md h-3/4 bg-black" *nzModalContent [nzTitle]="'Add User'"> -->
+    <form [formGroup]="register" class="flex flex-col space-y-4">
+      <div
+        class="flex sm:flex-row flex-col gap-3 justify-between sm:items-center"
+      >
+        <div
+          class="flex flex-col sm:w-4/6 w-full space-y-2 dark:text-gray-300 text-black"
+        >
+          <label for="email" class="leading-5">Email</label>
+          <input
+            class="form-input"
+            formControlName="email"
+            required
+            [email]="true"
+            type="email"
+            name="email"
+            id="email"
+          />
+        </div>
+        <div class="flex flex-col space-y-1">
+          <label for="picture">Pictures</label>
+          <app-picture
+            (upload)="updatePicture($event!)"
+            (load)="updateImage($event)"
+          />
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div
+          class="flex flex-col flex-1 space-y-2 dark:text-gray-300 text-black"
+        >
+          <label for="firstname" class="leading-5">Firstname</label>
+          <input
+            class="form-input"
+            formControlName="firstname"
+            type="text"
+            name="firstname"
+            id="firstname"
+          />
+        </div>
+        <div
+          class="flex flex-1 flex-col space-y-2 dark:text-gray-300 text-black"
+        >
+          <label for="lastname" class="leading-5">Lastname</label>
+          <input
+            class="form-input"
+            formControlName="lastname"
+            type="text"
+            name="lastname"
+            id="lastname"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col flex-1 space-y-2 dark:text-gray-300 text-black">
+        <label for="phoneNumber" class="leading-5">Phone Number</label>
+        <input
+          class="form-input"
+          formControlName="phonenumber"
+          [placeholder]="'Input phone number'"
+          type="tel"
+          name="phoneNumber"
+          id="phoneNumber"
+        />
+      </div>
+      <div class="flex items-center space-x-2">
+        <div class="flex flex-col justify-center space-y-1 flex-1">
+          <label for="categorie">Roles</label>
+          <nz-select
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            formControlName="roles"
+            [nzPlaceHolder]="'Select roles'"
+            [nzShowSearch]="true"
+            nzShowArrow="true"
+          >
+            @for (item of roleState().roles; track item.id) {
+            <nz-option [nzLabel]="item.name!" [nzValue]="item.id"></nz-option>
+            }
+          </nz-select>
+          <ng-template #tagPlaceHolder let-selectedList
+            >and {{ selectedList.length }} more selected
+          </ng-template>
+          @if (roleState().isError) {
+          <span nz-button class="text-red-500 text-center">
+            {{ roleState().error.message }}
+          </span>
+          }
+        </div>
+        <button class="text-3xl mt-5 text-green-400">
+          <span
+            (click)="addRole.set(true)"
+            nz-icon
+            nzType="plus"
+            nzTheme="outline"
+          ></span>
+        </button>
+      </div>
+      <div class="flex flex-col justify-center">
+        <button
+          nz-button
+          nzType="primary"
+          [nzLoading]="isSubmit()"
+          [disabled]="register.invalid"
+          (click)="isSubmit.set(true); submitForm()"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </ng-container>
+  <!-- </nz-card> -->
+</nz-modal>
+
+@if (addRole()) {
+<app-role [isVisible]="addRole()" (close)="addRole.set(false)" />
+}

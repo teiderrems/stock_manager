@@ -2,13 +2,8 @@ import {
   afterRender,
   Component,
   inject,
-  OnChanges,
   OnInit,
-  signal,
-  SimpleChanges,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef,
+  signal
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
@@ -17,15 +12,15 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
-import { NavBarComponent } from './nav-bar/nav-bar.component';
-import { LogoComponent } from './logo/logo.component';
+import { HeaderComponent } from './layout/header/header.component';
+import { FooterComponent } from './layout/footer/footer.component';
+import { NavBarComponent } from './layout/nav-bar/nav-bar.component';
+import { LogoComponent } from './layout/logo/logo.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { CapitalizePipe } from './capitalize.pipe';
-import { ProfileComponent } from './profile/profile.component';
+import { ProfileComponent } from './account/profile/profile.component';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';

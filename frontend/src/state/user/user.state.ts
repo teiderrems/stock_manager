@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { LoadSuccessAction,UpdateIsErrorAction,LoadUserAction, ActionOnUserFailled, PostUserAction,PutUserAction,DeleteUserAction, UpdateLoadingAction, UpdateSuccessAction, FetchUserWhoAuthenticate, FetchUserSuccess, AuthenticateUser, AuthenticateUserSuccess, ResetBooleanField } from './user.actions';
 import { User, UserResponseBody } from '../../interfaces';
-import { UserService } from '../../app/user/user.service';
 import { catchError,exhaustMap,mergeMap } from 'rxjs/operators';
+import { UserService } from '../../app/admin/user/user.service';
 
 export interface UserStateModel {
     users: UserResponseBody;

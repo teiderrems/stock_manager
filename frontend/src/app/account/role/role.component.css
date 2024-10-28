@@ -1,0 +1,7 @@
+input{
+    @apply rounded-md
+}
+
+button{
+    @apply rounded-md
+}

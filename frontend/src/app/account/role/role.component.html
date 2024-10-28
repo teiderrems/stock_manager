@@ -1,0 +1,28 @@
+<nz-modal
+  [nzVisible]="isVisible()"
+  nzTitle="Add Role"
+  (nzOnCancel)="handleCancel()"
+  [nzMask]="true"
+  [nzFooter]="null"
+  [nzCancelText]="null"
+  [nzOkText]="null"
+  [nzWidth]="300"
+>
+  <ng-container *nzModalContent>
+    <form [formGroup]="role" class="flex flex-col space-y-3">
+      <div class="flex flex-col space-y-1">
+        <label for="name">Name</label>
+        <input
+          formControlName="name"
+          class="form-input"
+          type="text"
+          name="name"
+        />
+      </div>
+      <div class="flex flex-col">
+        <button nz-button [nzLoading]="isSubmit()" (click)="PostRole();isSubmit.set(true)" [disabled]="role.invalid">Submit</button>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
+

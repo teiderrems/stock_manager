@@ -19,7 +19,7 @@
     [nzOffsetY]="50"
   >
     <ng-container *nzDrawerContent>
-      <nav>
+      <!-- <nav>
         <a
           routerLink="/home"
           class="flex space-x-2 items-center leading-10"
@@ -40,7 +40,8 @@
           [routerLinkActiveOptions]="{ exact: true }"
           >Items</a
         >
-      </nav>
+      </nav> -->
+      <app-nav-bar/>
       <nz-footer>
         <nz-switch [(ngModel)]="switchValue"></nz-switch>
       </nz-footer>

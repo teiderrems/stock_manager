@@ -1,0 +1,11 @@
+nav{
+    @apply flex flex-col p-4 overflow-auto space-y-4 h-full
+}
+
+nav>a{
+    @apply hover:cursor-pointer hover:font-bold  text-gray-500
+}
+
+.active{
+    @apply font-bold text-3xl
+}

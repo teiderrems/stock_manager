@@ -10,5 +10,6 @@
     <WebStackScaffolding_LayoutPageFile />
     <WebStackScaffolding_DbContextTypeFullName>backend.Data.ApplicationDbContext</WebStackScaffolding_DbContextTypeFullName>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
+    <NameOfLastUsedPublishProfile>C:\csharp\web\StoreManager\backend\Properties\PublishProfiles\storemanagementapi.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
-import { AppComponent } from './app.component';
 import { ItemComponent } from './item/item.component';
 import { ItemComponent as AdminItemComponents } from './admin/item/item.component';
 import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './account/login/login.component';
+import { RegisterComponent } from './account/register/register.component';
+import { UserComponent } from './admin/user/user.component';
+import { ResetPasswordComponent } from './account/reset-password/reset-password.component';
 // import { FooterComponent } from './footer/footer.component';
 
 export const routes: Routes = [
@@ -48,6 +49,23 @@ export const routes: Routes = [
         component:AdminItemComponents,
         data: {
             breadcrumb: 'AdminItems'
-        }
+        },
+        pathMatch:'full'
+    },
+    {
+        path:"admin/users",
+        component:UserComponent,
+        data: {
+            breadcrumb: 'Users'
+        },
+        pathMatch:'full'
+    },
+    {
+        path:"reset-password",
+        component:ResetPasswordComponent,
+        data: {
+            breadcrumb: 'ResetPassword'
+        },
+        pathMatch:'full'
     }
 ];

@@ -102,6 +102,7 @@
           formControlName="categories"
           [nzPlaceHolder]="'Select categories'"
           [nzShowSearch]="true"
+          nzShowArrow="true"
         >
           @for (item of categorieState().categories; track item.id) {
           <nz-option [nzLabel]="item.name!" [nzValue]="item.id"></nz-option>

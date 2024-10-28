@@ -6,16 +6,20 @@ using MR.EntityFrameworkCore.KeysetPagination;
 using MR.AspNetCore.Pagination;
 using backend.Dto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Elfie.Extensions;
 
 namespace backend.Controllers
 {
     [Route("api/users")]
     [ApiController]
     [Authorize]
-    public class ApplicationUsersController(ApplicationDbContext context, IPaginationService paginationService) : ControllerBase
+    public class ApplicationUsersController(ApplicationDbContext context, IPaginationService paginationService, UserManager<ApplicationUser> _userManager,IEmailSender emailSender) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IPaginationService _paginationService = paginationService;
+        private readonly UserManager<ApplicationUser> _userManager= _userManager;
+        private readonly IEmailSender _emailSender=emailSender;
 
         // GET: api/ApplicationUsers
         [HttpGet]
@@ -26,10 +30,9 @@ namespace backend.Controllers
             {
                 return Unauthorized();
             }
-
-            var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.UserName!));//.Descending(x => x.Id)
+            var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)
             var usersPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Users,
+                _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery(),
                 _usersKeysetQuery,
                 async id => await _context.Users.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new UserDto(item.Id, item.UserName, item.Firstname, item.Lastname,
@@ -46,7 +49,7 @@ namespace backend.Controllers
         // [AllowAnonymous]
         public async Task<ActionResult<UserDto>> GetApplicationUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Include(u=>u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().FirstOrDefaultAsync(u=>u.Id==id);
 
             if (user == null)
             {
@@ -64,14 +67,12 @@ namespace backend.Controllers
         // [AllowAnonymous]
         public async Task<ActionResult<UserDto>> GetApplicationUserByUsername(string username)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u=>u.UserName==username);
+            var user = await _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().FirstOrDefaultAsync(u=>u.UserName==username);
 
             if (user == null)
             {
                 return NotFound();
             }
-            System.Console.WriteLine(user);
-
             return new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
                                GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
                                GetRoles(user.Roles), user.PhoneNumber);
@@ -98,7 +99,7 @@ namespace backend.Controllers
             applicationUser.Roles!.ForEach(r=>{
 
                 if(!isIn(roles,r)){
-                    user.Roles!.Add(new ApplicationUserRole{
+                    user.Roles!.Add(new IdentityRole<int>{
                         Name=r
                     });
                 }
@@ -139,38 +140,42 @@ namespace backend.Controllers
         // POST: api/ApplicationUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDto>> PostApplicationUser(CreateUserDto applicationUser)
         {
-
-            var role=await _context.Roles.FirstOrDefaultAsync(r=>r.Name=="user");
-            if (role==null)
-            {
-                var appRole = new ApplicationUserRole
-                {
-                    Name = "user"
-                };
-                _context.Roles.Add(appRole);
-                role=appRole;
-            }
+            
             var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
 
-            var user=new ApplicationUser{
-                Roles=[],
-                UserName=applicationUser.Username,
-                Firstname=applicationUser.Firstname,
-                Lastname=applicationUser.Lastname,
-                Email=applicationUser.Email,
-                PhoneNumber=applicationUser.PhoneNumber,
-                Profil=picture,
+            List<IdentityRole<int>> roles=[];
+            applicationUser.Roles!.ForEach(id=>{
+                roles.Add(_context.Roles.Find(id)!);
+            });
+
+            var user = new ApplicationUser
+            {
+                Roles = roles,
+                UserName = applicationUser.Email,
+                Firstname = applicationUser.Firstname,
+                Lastname = applicationUser.Lastname,
+                Email = applicationUser.Email,
+                PhoneNumber = applicationUser.PhoneNumber,
+                Profil = picture,
+                NormalizedEmail = applicationUser.Email!.ToUpper(),
+                NormalizedUserName = applicationUser.Email!.ToUpper(),
+                EmailConfirmed = true
             };
 
-            user.Roles.Add(role);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+             var currentUser=await _userManager.AddPasswordAsync(user, "Toto1234;");
+
+            var message = new Message([applicationUser.Email], "Confirm your email", $"Please use these informations email={applicationUser.Email} and password=<h2>Toto1234;</h2> for your first login", null);
+
+            await _emailSender.SendEmailAsync(message);
 
             return CreatedAtAction("GetApplicationUser", new { id = user.Id }, new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
-                               GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
-                               GetRoles(user.Roles), user.PhoneNumber));
+                             GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
+                             GetRoles(user.Roles), user.PhoneNumber));
         }
 
         // DELETE: api/ApplicationUsers/5
@@ -205,7 +210,7 @@ namespace backend.Controllers
             return "";
         }
 
-        private static List<string> GetRoles(List<ApplicationUserRole>? roles)
+        private static List<string> GetRoles(List<IdentityRole<int>>? roles)
         {
             List<string> roleList = [];
             if(roles!=null && roles.Count>0){

@@ -11,6 +11,12 @@ export interface CreateCategorie{
     description?:string | null;
 }
 
+
+export interface Role{
+    id?:number;
+    name?:string;
+}
+
 export interface Comment{
 
     id:number;
@@ -37,9 +43,10 @@ export interface Register{
 }
 
 export interface ResetPassword{
-    email:string;
-    resetCode:string;
-    newPassword:string;
+    
+    email?:string;
+    resetCode?:string;
+    newPassword?:string;
 }
 
 export interface Item{
@@ -138,28 +145,25 @@ export interface UserResponseBody{
 }
 
 
-export interface RoleResponseBody{
-    data:Role[]
-}
-
 
 export interface CreateUser{
-    Username:string;
-    Firstname?:string;
-    Lastname?:string;
-    Email?:string;
-    PhoneNumber:string;
-    PictureId:number;
+    username:string;
+    firstname?:string;
+    lastname?:string;
+    email?:string;
+    roles?:number[];
+    phonenumber:string;
+    pictureId:number;
 }
 
 export interface UpdateUser{
-    Id:number;
-    Username:string;
-    Firstname?:string;
-    Lastname?:string;
-    Email?:string;
-    PhoneNumber:string;
-    PictureId:number;
+    id:number;
+    username:string;
+    firstname?:string;
+    lastname?:string;
+    email?:string;
+    phoneNumber:string;
+    pictureId:number;
 }
 
 export interface CreateItem{
