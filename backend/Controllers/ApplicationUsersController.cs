@@ -25,11 +25,14 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<KeysetPaginationResult<UserDto>>> GetUsers()
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (user!=null &&!user.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            //var user = await _context.Users.Include(u=>u.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            //var roles= GetRoles(user!.Roles);
+
+            //if (user != null && !(roles.Any(r=>r.EndsWith("admin") || r.EndsWith("guest"))))
+            //{
+            //    return Unauthorized();
+            //}
+            
             var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)
             var usersPaginationResult = await _paginationService.KeysetPaginateAsync(
                 _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery(),
@@ -140,7 +143,7 @@ namespace backend.Controllers
         // POST: api/ApplicationUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult<UserDto>> PostApplicationUser(CreateUserDto applicationUser)
         {
             

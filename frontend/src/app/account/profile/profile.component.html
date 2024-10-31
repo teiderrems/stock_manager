@@ -3,7 +3,7 @@
     <a routerLink="#" class="flex space-x-2 items-center" nz-dropdown [nzDropdownMenu]="menu">
       @if(currentUser()!==undefined){
         
-        <nz-avatar nzSize="large" [nzSrc]="currentUser()?.profile??'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'" [nzAlt]="currentUser()?.email"></nz-avatar>
+        <nz-avatar nzSize="large" [nzSrc]="(!!currentUser()?.profile)?currentUser()?.profile:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'" [nzAlt]="currentUser()?.email"></nz-avatar>
         <h6 class="text-sm font-sans">{{currentUser()?.email}}</h6>
         <span nz-icon nzType="down"></span>
       }

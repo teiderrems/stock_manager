@@ -2,11 +2,13 @@
 
 namespace backend.Models
 {
-    public class Comment(string title,string? message) : CommunProperties
+    public class Comment : CommunProperties
     {
-        public string Title { get; set; } = title;
-        public string? Message { get; set; } = message;
+        public required string  Title { get; set; }
+        public string? Message { get; set; }
 
         public required Item Item { get; set; }
+
+        public  ApplicationUser? Owner { get; set; }
     }
 }

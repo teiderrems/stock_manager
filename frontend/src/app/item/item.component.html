@@ -3,17 +3,28 @@
     class="row-span-1 row-start-1 px-4 rounded-t-md flex justify-between items-center"
   >
     <h1 class="text-gray-700">Item List</h1>
-    <button
-      (click)="toggleModal()"
-      class="bg-opacity-50 text-green-400 text-3xl rounded-full"
-    >
-      <span nz-icon nzType="plus" nzTheme="outline"></span>
-    </button>
-  </div>
+    @if (isAdminOrGuest()) {
 
-  <!-- <app-add-item/> -->
+      <button
+        (click)="toggleModal()"
+        class="bg-opacity-50 text-green-400 text-3xl rounded-full"
+      >
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+    }
+    @else {
+      <div class=" flex">
+        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+          <input type="text" class="form-input" nz-input placeholder="input search text" />
+        </nz-input-group>
+        <ng-template #suffixIconButton>
+          <button nz-button nzType="primary" nzSearch><span nz-icon nzType="search"></span></button>
+        </ng-template>
+      </div>
+    }
+  </div>
   <main class="px-4 row-span-10 row-start-2 grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
-    <div class="row-span-3 row-start-1">
+    <div class="row-span-2 row-start-1">
       <nz-carousel [nzEffect]="'scrollx'" [nzAutoPlay]="true">
         
         @for (item of items().data; track item.id) {
@@ -27,13 +38,13 @@
       }
       </nz-carousel>
     </div>
-    <div class="row-span-3 grid sm:grid-cols-3 md:grid-cols-4 overflow-y-auto xl:grid-cols-6 gap-4 grid-rows-3">
+    <div class="row-span-4 grid sm:grid-cols-3 md:grid-cols-4 overflow-y-auto xl:grid-cols-6 gap-4 grid-rows-3">
 
       @if (items().data.length>0) { 
-        <!-- @for (item of items().data; track item.id) {
+        @for (item of items().data; track item.id) {
         
           <app-itemdetail [currentItem]="item"/>
-        }  -->
+        } 
     }
     </div>
   </main>

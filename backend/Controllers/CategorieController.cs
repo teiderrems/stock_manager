@@ -39,14 +39,9 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-         [Authorize]
+        [Authorize]
         public async Task<IActionResult> AddCategorie(Categorie categorie)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
             if (categorie==null)
             {
                 return NotFound(); 
@@ -65,11 +60,7 @@ namespace backend.Controllers
         [Authorize]
         public async Task<ActionResult<Categorie>> UpdateCategorie( int id,Categorie categorie)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            
             if (categorie == null)
             {
                 return BadRequest();
@@ -97,11 +88,7 @@ namespace backend.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteCategorie(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            
             try
             {
                 var cat = await _context.Categories.FindAsync(id);

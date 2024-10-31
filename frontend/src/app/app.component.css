@@ -11,11 +11,12 @@
   }
 
   .logo {
-    height: 32px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px;
+    height: 58px;
+    /* background: rgba(255, 255, 255, 0.2); */
+    background-color: azure;
     font-weight: bold;
     font-size: large;
+
   }
 
   /* nz-header {

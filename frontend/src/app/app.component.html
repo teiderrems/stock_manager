@@ -6,41 +6,27 @@
     [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null"
   >
-    <div class="logo">Store Management</div>
+    <div class="logo"><app-logo/></div>
     <app-nav-bar />
   </nz-sider>
+
+  <ng-template #logo>
+    <app-logo/>
+  </ng-template>
+
   <nz-drawer
     [nzClosable]="true"
     [nzVisible]="visible"
     [nzPlacement]="'left'"
-    nzTitle="Store Management"
+    [nzTitle]="logo"
     (nzOnClose)="close()"
+    [nzCloseOnNavigation]="true"
+    [nzWrapClassName]="'flex'"
+    [nzClosable]="true"
     [nzWidth]="'75%'"
     [nzOffsetY]="50"
   >
     <ng-container *nzDrawerContent>
-      <!-- <nav>
-        <a
-          routerLink="/home"
-          class="flex space-x-2 items-center leading-10"
-          (click)="close()"
-          routerLinkActive="active"
-          ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{ exact: true }"
-          mat-fab
-          aria-label="Example icon button with a add icon"
-        >
-          <span class="">Home</span>
-        </a>
-        <a
-          routerLink="/items"
-          routerLinkActive="active"
-          (click)="close()"
-          ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{ exact: true }"
-          >Items</a
-        >
-      </nav> -->
       <app-nav-bar/>
       <nz-footer>
         <nz-switch [(ngModel)]="switchValue"></nz-switch>

@@ -19,8 +19,7 @@
       <nz-list-item>
         <nz-list-item-meta
           [nzAvatar]="
-            item.profile ??
-            'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
+            (!!item.profile)?item.profile:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
           "
           [nzDescription]="item.email"
         >
@@ -50,6 +49,7 @@
     </nz-list>
   </main>
   <div class="row-span-1 px-4  flex justify-end items-center">
-    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="false" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="userState().users.totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="userState().users.pageSize"></nz-pagination>
+    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="true" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="userState().users.totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="userState().users.pageSize"></nz-pagination>
   </div>
 </div>
+

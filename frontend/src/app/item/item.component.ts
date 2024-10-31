@@ -5,6 +5,7 @@ import {
   OnInit,
   signal,
   EventEmitter,
+  computed,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Store } from '@ngxs/store';
@@ -15,11 +16,19 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemdetailComponent } from "./components/itemdetail/itemdetail.component";
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzCarouselModule } from 'ng-zorro-antd/carousel';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { AuthState } from '../../state/auth/auth.state';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+
+
+
 
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [AddItemComponent, NzIconModule, ItemdetailComponent,NzPaginationModule,NzCarouselModule],
+  imports: [AddItemComponent,NzInputModule,NzButtonModule,NzListModule,NzTagModule, NzIconModule, ItemdetailComponent,NzPaginationModule,NzCarouselModule],
   templateUrl: './item.component.html',
   styleUrl: './item.component.css',
 })
@@ -48,6 +57,10 @@ updateLimit(size:number) {
   private readonly store = inject(Store);
 
   open = signal<boolean>(false);
+
+  currentUser=this.store.selectSignal(AuthState.getUser);
+
+  isAdminOrGuest=computed(()=>this.currentUser()?.roles?.includes("admin") || this.currentUser()?.roles?.includes("guest"));
 
   public items = this.store.selectSignal(ItemState.getItems);
 

@@ -28,14 +28,10 @@ namespace backend.Controllers
         {
             
             var pdfUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/users/{owner}/bills";
-            var user=await _context.Users.FirstOrDefaultAsync(u=>u.UserName== User.Identity!.Name);
-            if (user!.Id!=owner || !user.Roles!.Any(r=>r.Name=="admin" || r.Name=="guest"))
-            {
-                return Unauthorized();
-            }
+            
             var _billsKeysetQuery = KeysetQuery.Build<Bill>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
             var billsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Bills.Where(b=>b.Owner.Id==owner),
+                _context.Bills.Include(b=>b.Owner).AsSplitQuery().Where(b=>b.Owner.Id==owner),
                 _billsKeysetQuery,
                 async id => await _context.Bills.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new BillDto(item.Id, GetItemName(item.Items), item.Title, item.Status, GetFullName(item.Owner), 
@@ -51,7 +47,7 @@ namespace backend.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id==owner);
 
-            var bill = await _context.Bills.FirstOrDefaultAsync(b=>b.Id==id && b.Owner.Id==owner);
+            var bill = await _context.Bills.Include(b => b.Owner).AsSplitQuery().FirstOrDefaultAsync(b=>b.Id==id && b.Owner.Id==owner);
 
             if (bill == null)
             {
@@ -67,11 +63,7 @@ namespace backend.Controllers
         
         public async Task<IActionResult> PutBill(int owner, int id, Bill bill)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            
             if (id != bill.Id || bill.Owner.Id!=owner)
             {
                 return BadRequest();
@@ -104,11 +96,7 @@ namespace backend.Controllers
         
         public async Task<ActionResult<Bill>> PostBill(int ownerId,Bill bill)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (user!=null && !user.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            
             _context.Bills.Add(bill);
             await _context.SaveChangesAsync();
 
@@ -120,7 +108,7 @@ namespace backend.Controllers
         
         public async Task<IActionResult> DeleteBill(int id,int owner)
         {
-            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.Id == id && b.Owner.Id == owner);
+            var bill = await _context.Bills.Include(b => b.Owner).AsSplitQuery().FirstOrDefaultAsync(b => b.Id == id && b.Owner.Id == owner);
             if (bill == null)
             {
                 return NotFound();

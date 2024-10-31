@@ -28,7 +28,8 @@ namespace backend.Controllers
             _logger.LogInformation("Item List");
             var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x => x.Name));//.Descending(x => x.Id)
             var itemsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Items,
+                _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
+                .AsSplitQuery().Include(i => i.Image).AsSplitQuery(),
                 _itemsKeysetQuery,
                 async id => await _context.Items.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new ItemDto(
@@ -51,7 +52,9 @@ namespace backend.Controllers
             try
             {
                 var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
-                var item = await _context.Items.FindAsync(id);
+                var item = await _context.Items.Include(i => i.Comments).AsSplitQuery()
+                    .Include(i => i.Categories).AsSplitQuery()
+                    .Include(i => i.Image).AsSplitQuery().FirstOrDefaultAsync(i=>i.Id==id);
                 
                 return item != null ? new ItemDto(item.Id, item.Name,
                     item.StockQuantity,
@@ -72,11 +75,11 @@ namespace backend.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddItem(CreateItemDto item)
         {
-            // var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            // if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            // {
-            //     return Unauthorized();
-            // }
+            //var user = await _context.Users.Include(u=>u.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            //if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
+            //{
+            //    return Unauthorized();
+            //}
             if (item == null)
             {
                 return NotFound();
@@ -118,7 +121,7 @@ namespace backend.Controllers
 
         public async Task<ActionResult<Item>> UpdateItem(int id, UpdateItemDto item)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            var user = await _context.Users.Include(i=>i.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
             if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();
@@ -132,7 +135,7 @@ namespace backend.Controllers
             {
                 if (item.Id == id)
                 {
-                    var oldItem = _context.Items.Find(id);
+                    var oldItem = _context.Items.FirstOrDefault(i=>i.Id==id);
                     oldItem!.Description = oldItem.Description == item.Description ? oldItem.Description : item.Description;
                     oldItem.StockQuantity = oldItem.StockQuantity == item.StockQuantity ? oldItem.StockQuantity : item.StockQuantity;
                     oldItem.MinPrice = oldItem.MinPrice == item.MinPrice ? oldItem.MinPrice : item.MinPrice;
@@ -159,7 +162,7 @@ namespace backend.Controllers
 
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
+            var user = await _context.Users.Include(u=>u.Roles).FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
             if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
             {
                 return Unauthorized();

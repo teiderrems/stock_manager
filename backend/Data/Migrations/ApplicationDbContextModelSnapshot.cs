@@ -377,6 +377,9 @@ namespace backend.Data.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -387,6 +390,8 @@ namespace backend.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Comments");
                 });
@@ -479,18 +484,18 @@ namespace backend.Data.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("User_Role<int>", b =>
+            modelBuilder.Entity("ApplicationUserIdentityRole<int>", b =>
                 {
                     b.HasOne("backend.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -536,20 +541,20 @@ namespace backend.Data.Migrations
                         .IsRequired();
                 });
 
-            // modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-            //     {
-            //         b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
-            //             .WithMany()
-            //             .HasForeignKey("RoleId")
-            //             .OnDelete(DeleteBehavior.Cascade)
-            //             .IsRequired();
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            //         b.HasOne("backend.Models.ApplicationUser", null)
-            //             .WithMany()
-            //             .HasForeignKey("UserId")
-            //             .OnDelete(DeleteBehavior.Cascade)
-            //             .IsRequired();
-            //     });
+                    b.HasOne("backend.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
@@ -588,7 +593,13 @@ namespace backend.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("backend.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
                     b.Navigation("Item");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("backend.Models.Item", b =>

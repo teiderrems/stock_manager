@@ -11,7 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/items")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     public class CommentController(ApplicationDbContext context, ILogger<CommentController> logger, IPaginationService paginationService) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;
@@ -25,7 +25,7 @@ namespace backend.Controllers
 
             var _commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
             var commentsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Comments.Where(c=>c.Item.Id==itemId),
+                _context.Comments.Where(c=>c.Item.Id==itemId).Include(c=>c.Owner).AsSingleQuery(),
                 _commentsKeysetQuery,
                 async id => await _context.Comments.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new CommentDto(item))
@@ -39,7 +39,7 @@ namespace backend.Controllers
         {
             try
             {
-                var comment = await _context.Comments.FirstOrDefaultAsync(c=>c.Id==id && c.Item.Id==itemId);
+                var comment = await _context.Comments.Include(c => c.Owner).AsSingleQuery().FirstOrDefaultAsync(c=>c.Id==id && c.Item.Id==itemId);
                 return comment!=null?new CommentDto(comment) :NotFound();
             }
             catch (Exception ex)
@@ -50,17 +50,24 @@ namespace backend.Controllers
         }
 
         [HttpPost("{itemId:int}/comments")]
-        public async Task<IActionResult> AddComment(int itemId,Comment comment)
+        public async Task<ActionResult> AddComment(int itemId,CreateCommentDto comment)
         {
             if (comment==null)
             {
                 return NotFound(); 
             }
             try {
-                comment.Item = (await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId))!;
-                _context.Comments.Add(comment);
+                var currentComment = new Comment
+                {
+                    Title = comment.Title!,
+                    Message=comment.Content,
+                    Item= (await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId))!,
+                    Owner= (await _context.Users.FirstOrDefaultAsync(c => c.UserName == User.Identity.Name))!
+                };
+
+                _context.Comments.Add(currentComment);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCommentById), new { Id = comment.Id }, comment);
+                return Ok(true);
             }
             catch (Exception ex) { 
                 return BadRequest(ex);

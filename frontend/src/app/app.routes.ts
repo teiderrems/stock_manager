@@ -6,6 +6,8 @@ import { LoginComponent } from './account/login/login.component';
 import { RegisterComponent } from './account/register/register.component';
 import { UserComponent } from './admin/user/user.component';
 import { ResetPasswordComponent } from './account/reset-password/reset-password.component';
+import { CommentComponent } from './comment/comment.component';
+import { NotfoundComponent } from './layout/notfound/notfound.component';
 // import { FooterComponent } from './footer/footer.component';
 
 export const routes: Routes = [
@@ -18,6 +20,14 @@ export const routes: Routes = [
         pathMatch:"full",
         data: {
             breadcrumb: 'Items'
+        }
+    },
+    {
+        path:"items/:itemId/comments",
+        component:CommentComponent,
+        pathMatch:"full",
+        data: {
+            breadcrumb: 'Comments'
         }
     },
     {
@@ -67,5 +77,9 @@ export const routes: Routes = [
             breadcrumb: 'ResetPassword'
         },
         pathMatch:'full'
+    },
+    {
+        path:'**',
+        component:NotfoundComponent
     }
 ];

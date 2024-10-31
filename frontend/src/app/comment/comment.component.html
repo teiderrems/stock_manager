@@ -1,1 +1,49 @@
-<p>comment works!</p>
+<div class="grid grid-rows-12 h-full overflow-hidden">
+  <div
+  class="row-span-1 row-start-1 px-4 rounded-t-md flex justify-between items-center"
+>
+  <h1 class="text-gray-700">Item List</h1>
+  <button
+    (click)="showAddForm.set(true)"
+    class="bg-opacity-50 text-green-400 text-3xl rounded-full"
+  >
+    <span nz-icon nzType="plus" nzTheme="outline"></span>
+  </button>
+</div>
+<main class="px-4 row-span-11 row-start-2 overflow-y-auto grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
+  <nz-list [nzDataSource]="commentState().comments.data" [nzRenderItem]="item" [nzItemLayout]="'horizontal'">
+    <ng-template #item let-item>
+      <nz-comment [nzAuthor]="item.owner" nzDatetime="{{item.createdAt}}">
+        <nz-avatar nz-comment-avatar nzIcon="user"></nz-avatar>
+        <nz-comment-content>
+          <p>{{ item.message }}</p>
+        </nz-comment-content>
+        <nz-comment-action>Reply to</nz-comment-action>
+      </nz-comment>
+    </ng-template>
+  </nz-list>
+</main>
+</div>
+
+<nz-modal [nzVisible]="showAddForm()" [nzMask]="true" [nzMaskClosable]="true" nzTitle="The first Modal" (nzOnCancel)="handleCancel()" [nzCancelText]="null" [nzFooter]="null" [nzOkText]="null">
+  <ng-container *nzModalContent>
+    <nz-comment [formGroup]="comment">
+      <nz-avatar nz-comment-avatar nzIcon="user"></nz-avatar>
+      <nz-comment-content>
+        <nz-form-item>
+          <nz-form-label>Title</nz-form-label>
+          <input formControlName="title" nz-input rows="4"/>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Content</nz-form-label>
+          <textarea formControlName="content" nz-input rows="4"></textarea>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" [nzLoading]="IsSubmitting()" [disabled]="comment.invalid" (click)="IsSubmitting.set(true);handleSubmit()">
+            Add Comment
+          </button>
+        </nz-form-item>
+      </nz-comment-content>
+    </nz-comment>
+  </ng-container>
+</nz-modal>

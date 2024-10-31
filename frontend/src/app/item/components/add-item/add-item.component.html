@@ -16,7 +16,6 @@
     [formGroup]="item"
     class="flex flex-col space-y-4"
     *nzModalContent
-    
   >
     <div class="flex space-x-3">
       <div class="w-4/5 flex flex-col space-y-1">
@@ -93,10 +92,8 @@
     </div>
     <div class="flex items-center space-x-2">
       <div class="flex flex-col justify-center space-y-1 flex-1">
-
         <label for="categorie">Categories</label>
         <nz-select
-          
           [nzMaxTagPlaceholder]="tagPlaceHolder"
           nzMode="multiple"
           formControlName="categories"
@@ -110,27 +107,43 @@
         </nz-select>
         <ng-template #tagPlaceHolder let-selectedList
           >and {{ selectedList.length }} more selected
-        </ng-template
-        >
+        </ng-template>
         @if (categorieState().isError) {
-          <span nz-button class="text-red-500 text-center">
-            {{categorieState().error.message}}
-          </span>
+        <span nz-button class="text-red-500 text-center">
+          {{ categorieState().error.message }}
+        </span>
         }
       </div>
-      <button class="text-3xl mt-5  text-green-400 "><span (click)="addCategorie.set(true)" nz-icon nzType="plus" nzTheme="outline"></span></button>
-        @if (addCategorie()) {
-          <app-categorie [isVisible]="addCategorie()" (close)="addCategorie.set(false)"/>
-        }
-      
-    </div >
-    
+      <button class="text-3xl mt-5 text-green-400">
+        <span
+          (click)="addCategorie.set(true)"
+          nz-icon
+          nzType="plus"
+          nzTheme="outline"
+        ></span>
+      </button>
+      @if (addCategorie()) {
+      <app-categorie
+        [isVisible]="addCategorie()"
+        (close)="addCategorie.set(false)"
+      />
+      }
+    </div>
+
     <div class="flex flex-col space-y-1">
       <label for="picture">Pictures</label>
-      <app-picture (upload)="updatePicture($event!)" (load)="updateImage($event)" />
+      <app-picture
+        (upload)="updatePicture($event!)"
+        (load)="updateImage($event)"
+      />
     </div>
     <div class="flex flex-col flex-1">
-      <button nz-button [nzLoading]="isSubmit()" (click)="PostItem();isSubmit.set(true)" [disabled]="item.invalid">
+      <button
+        nz-button
+        [nzLoading]="isSubmit()"
+        (click)="PostItem(); isSubmit.set(true)"
+        [disabled]="item.invalid"
+      >
         Submit
       </button>
     </div>

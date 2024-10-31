@@ -13,3 +13,7 @@
 
     
   }
+
+  input,button{
+    @apply rounded-md
+  }

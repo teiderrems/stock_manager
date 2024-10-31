@@ -22,12 +22,14 @@ export interface Comment{
     id:number;
     title?:string;
     message?:string;
+    owner?:string;
+    createdAt?:Date;
 }
 
 export interface CreateComment{
 
-    title?:string;
-    message?:string;
+    title?:string| null;
+    message?:string| null;
 }
 
 export interface Login{

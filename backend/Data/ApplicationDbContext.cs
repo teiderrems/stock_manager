@@ -18,9 +18,6 @@ namespace backend.Data
         public DbSet<Bill> Bills { get; set; }
 
 
-        public override DbSet<ApplicationUser> Users {  get; set; } = default!;
-
-
 
 
         protected override void OnModelCreating(ModelBuilder builder)
