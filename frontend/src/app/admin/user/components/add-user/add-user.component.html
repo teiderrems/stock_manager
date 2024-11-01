@@ -11,7 +11,6 @@
   [nzFooter]="null"
 >
   <ng-container *nzModalContent>
-    <!-- <nz-card class="shadow-md h-3/4 bg-black" *nzModalContent [nzTitle]="'Add User'"> -->
     <form [formGroup]="register" class="flex flex-col space-y-4">
       <div
         class="flex sm:flex-row flex-col gap-3 justify-between sm:items-center"
@@ -79,7 +78,7 @@
       <div class="flex items-center space-x-2">
         <div class="flex flex-col justify-center space-y-1 flex-1">
           <label for="categorie">Roles</label>
-          <nz-select
+          <nz-select style="border-radius: 5px;"
             [nzMaxTagPlaceholder]="tagPlaceHolder"
             nzMode="multiple"
             formControlName="roles"
@@ -122,7 +121,6 @@
       </div>
     </form>
   </ng-container>
-  <!-- </nz-card> -->
 </nz-modal>
 
 @if (addRole()) {

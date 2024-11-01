@@ -48,8 +48,8 @@ export class CommentState {
     
     return this.commentService.getAllComment(itemId).pipe(
 
-      mergeMap(Comments=>ctx.dispatch([ResetBooleanField,new LoadSuccessAction(Comments),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
+      mergeMap(Comments=>ctx.dispatch([new LoadSuccessAction(Comments),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
       
     );
   }
@@ -67,8 +67,8 @@ export class CommentState {
   addNewComment(ctx:StateContext<CommentStateModel>,{itemId,comment}:PostCommentAction){
 
     return this.commentService.addComment(comment,itemId).pipe(
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
       
     );
   }
@@ -88,8 +88,8 @@ export class CommentState {
   deleteComment(ctx:StateContext<CommentStateModel>,{id,itemId}:DeleteCommentAction){
     return this.commentService.deleteComment(id,itemId).pipe(
 
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
       
     )
   }

@@ -1,33 +1,75 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { afterRender, Component, inject, OnInit, signal } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { RoleComponent } from "../../account/role/role.component";
 import { AddUserComponent } from "./components/add-user/add-user.component";
 import { Store } from '@ngxs/store';
 import { UserState } from '../../../state/user/user.state';
-import { LoadUserAction } from '../../../state/user/user.actions';
+import { DeleteUserAction, LoadUserAction, ResetBooleanField } from '../../../state/user/user.actions';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { User } from '../../../interfaces';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { catchError, EMPTY, map, Observable } from 'rxjs';
+
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [NzIconModule,NzButtonModule,NzPaginationModule,NzIconModule,NzSkeletonModule, NzButtonModule,NzListModule, RoleComponent, AddUserComponent],
+  imports: [NzIconModule,NzButtonModule,NzPopconfirmModule,NzPaginationModule,NzIconModule,NzSkeletonModule, NzButtonModule,NzListModule, RoleComponent, AddUserComponent],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
 export class UserComponent implements OnInit {
 
   delete(user:User){
-    console.log(user);
+    this.store.dispatch(ResetBooleanField);
+    this.store.dispatch(new DeleteUserAction(user.id!));
   }
+
+  
+  cancel(): void {
+    this.nzMessageService.info('click cancel');
+  }
+
+  confirm(user:User): void {
+    this.store.dispatch(ResetBooleanField);
+    this.store.dispatch(new DeleteUserAction(user.id!)).pipe(
+      map(value=>{
+        this.nzMessageService.info(user.username + " was deletd successfully");
+      }),
+      catchError(error=>{
+        this.nzMessageService.error(error.message);
+        return EMPTY;
+      })
+    ).subscribe(v=>{
+      console.log(v);
+    });
+    // if (this.userState().isSuccess) {
+    //   this.nzMessageService.info('click confirm'+user.username);
+    // }
+  }
+
+  beforeConfirm(): Observable<boolean> {
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(true);
+        observer.complete();
+      }, 500);
+    });
+  }
+
+  private nzMessageService=inject(NzMessageService);
+
+
 
   edit(user: User) {
     console.log(user);
   }
   ngOnInit(): void {
+    this.store.dispatch(ResetBooleanField);
     this.store.dispatch(LoadUserAction);
   }
 

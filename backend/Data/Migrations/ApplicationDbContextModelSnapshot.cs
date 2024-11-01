@@ -595,7 +595,8 @@ namespace backend.Data.Migrations
 
                     b.HasOne("backend.Models.ApplicationUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Item");
 

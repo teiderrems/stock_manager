@@ -47,8 +47,8 @@ export class ItemState {
   loadItem(ctx: StateContext<ItemStateModel>,{page,limit}:LoadItemAction){
     
     return this.itemService.getAllItem(page,limit).pipe(
-      mergeMap(items=>ctx.dispatch([ResetBooleanField,new LoadSuccessAction(items),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
+      mergeMap(items=>ctx.dispatch([new LoadSuccessAction(items),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
       
     );
   }
@@ -66,8 +66,8 @@ export class ItemState {
   addNewItem(ctx:StateContext<ItemStateModel>,{item}:PostItemAction){
 
     return this.itemService.addItem(item).pipe(
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
       
     );
   }
@@ -77,8 +77,8 @@ export class ItemState {
   updateItem(ctx:StateContext<ItemStateModel>,{item,id}:PutItemAction){
 
     return this.itemService.updateItem(id,item).pipe(
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
       
     );
   }
@@ -87,8 +87,8 @@ export class ItemState {
   deleteItem(ctx:StateContext<ItemStateModel>,{id}:DeleteItemAction){
     return this.itemService.deleteItem(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([LoadItemAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnItemFailled(error.message,error.status)])),
       
     )
   }

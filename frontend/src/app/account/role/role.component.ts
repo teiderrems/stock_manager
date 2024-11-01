@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Store } from '@ngxs/store';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { PostRoleAction } from '../../../state/role/role.actions';
+import { PostRoleAction, ResetBooleanField } from '../../../state/role/role.actions';
 import { RoleState } from '../../../state/role/role.state';
 import { catchError, map, of } from 'rxjs';
 
@@ -28,12 +28,13 @@ export class RoleComponent {
   }
 
   PostRole() {
-
+    this.store.dispatch(ResetBooleanField);
     if (this.role.valid) {
       this.store.dispatch(new PostRoleAction(this.role.getRawValue() as {name:string}));
       if (this.isSuccess()) {
         this.isSubmit.set(false);
         this.close.emit();
+        this.store.dispatch(ResetBooleanField);
       }
     }
     

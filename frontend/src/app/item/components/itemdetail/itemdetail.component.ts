@@ -16,7 +16,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 @Component({
   selector: 'app-itemdetail',
   standalone: true,
-  imports: [NzCardModule,NzCollapseModule,NzTagModule, NzButtonModule, NzIconModule, NzImageModule, NzTypographyModule, CommentComponent],
+  imports: [NzCardModule,NzCollapseModule,NzImageModule,NzTagModule, NzButtonModule, NzIconModule, NzImageModule, NzTypographyModule, CommentComponent],
   templateUrl: './itemdetail.component.html',
   styleUrl: './itemdetail.component.css'
 })

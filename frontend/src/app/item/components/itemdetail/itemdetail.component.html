@@ -1,11 +1,11 @@
 
-<nz-card nzHoverable  [nzCover]="coverTemplate" [nzActions]="[comment,edit]">
-  <nz-card-meta [nzTitle]="currentItem()?.name!" [nzDescription]="tag">
-    
-  </nz-card-meta>
-</nz-card>
+  <nz-card nzHoverable style="width:240px;height: 280px; border-radius: 5px;"  [nzCover]="coverTemplate" [nzActions]="[comment,edit]">
+    <nz-card-meta [nzTitle]="currentItem()?.name!" [nzDescription]="tag">
+      
+    </nz-card-meta>
+  </nz-card>
 <ng-template #coverTemplate>
-  <img alt="example" [src]="currentItem()?.imageUrl"/>
+  <img alt="example" nz-image [nzSrc]="currentItem()?.imageUrl!"/>
 </ng-template>
 
 <ng-template #comment>
@@ -21,5 +21,11 @@
     @for (item of currentItem()?.categories; track item.id) {
       <nz-tag [nzColor]="'gray'" [nzMode]="'checkable'">{{item.name}}</nz-tag>
     }
+  </div>
+</ng-template>
+
+<ng-template #container>
+  <div class="sm:w-2/4 md:w-1/4 w-full">
+    <img alt="example" [src]="currentItem()?.imageUrl"/>
   </div>
 </ng-template>

@@ -45,8 +45,8 @@ export class PictureState {
   loadPicture(ctx: StateContext<PictureStateModel>){
     
     return this.pictureService.getAllPicture().pipe(
-      mergeMap(pictures=>ctx.dispatch([ResetBooleanField,new LoadSuccessAction(pictures),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
+      mergeMap(pictures=>ctx.dispatch([new LoadSuccessAction(pictures),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     );
   }
@@ -72,8 +72,8 @@ export class PictureState {
 
     return this.pictureService.addPicture(picture).pipe(
 
-      mergeMap((id)=>ctx.dispatch([ResetBooleanField,UpdateSuccessAction,UpdateLoadingAction,new LoadLastPostPictureAction(id)])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
+      mergeMap((id)=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction,new LoadLastPostPictureAction(id)])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     );
   }
@@ -83,8 +83,8 @@ export class PictureState {
   updatePicture(ctx:StateContext<PictureStateModel>,{picture,id}:PutPictureAction){
 
     return this.pictureService.updatePicture(id,picture).pipe(
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     );
   }
@@ -94,8 +94,8 @@ export class PictureState {
     
     return this.pictureService.deletePicture(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnPictureFailled(error.message,error.status)])),
       
     )
   }

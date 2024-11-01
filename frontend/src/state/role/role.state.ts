@@ -41,8 +41,8 @@ export class RoleState {
   loadRole(ctx: StateContext<RoleStateModel>){
     
     return this.RoleService.getAllRole().pipe(
-      mergeMap(roles=>ctx.dispatch([ResetBooleanField,new LoadSuccessAction(roles),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
+      mergeMap(roles=>ctx.dispatch([new LoadSuccessAction(roles),UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
     );
   }
 
@@ -59,8 +59,8 @@ export class RoleState {
   addNewRole(ctx:StateContext<RoleStateModel>,{payload}:PostRoleAction){
 
     return this.RoleService.addRole(payload).pipe(
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
       
     );
   }
@@ -70,8 +70,8 @@ export class RoleState {
   // updateRole(ctx:StateContext<RoleStateModel>,{Role,id}:PutRoleAction){
 
   //   return this.RoleService.updateRole(id,Role).pipe(
-  //     mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
-  //     catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
+  //     mergeMap(()=>ctx.dispatch([LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
+  //     catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
       
   //   );
   // }
@@ -80,8 +80,8 @@ export class RoleState {
   deleteRole(ctx:StateContext<RoleStateModel>,{id}:DeleteRoleAction){
     return this.RoleService.deleteRole(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([ResetBooleanField,LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([ResetBooleanField,UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
+      mergeMap(()=>ctx.dispatch([LoadRoleAction,UpdateSuccessAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnRoleFailled(error.message,error.status)])),
       
     )
   }

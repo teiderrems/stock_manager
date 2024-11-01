@@ -14,8 +14,10 @@
     <app-add-user (close)="open.set(false)" [isVisible]="open()" />
     <nz-list nzItemLayout="horizontal">
       @if (userState().users.data.length === 0) {
-      <nz-skeleton [nzAvatar]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-      } @else { @for (item of userState().users.data; track item) {
+        @for(v of [1,2,3,4,8,7,10]; track v){
+          <nz-skeleton [nzAvatar]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+        }
+      } @else { @for (item of userState().users.data; track item.id) {
       <nz-list-item>
         <nz-list-item-meta
           [nzAvatar]="
@@ -34,15 +36,24 @@
             ><button nz-button nzType="link" (click)="edit(item)">
               <span nz-icon nzType="edit" nzTheme="outline"></span></button
           ></nz-list-item-action>
-          <nz-list-item-action
-            ><button
-              nz-button
-              nzType="link"
-              nzDanger="true"
-              (click)="delete(item)"
-            >
-              <span nz-icon nzType="delete" nzTheme="outline"></span></button
-          ></nz-list-item-action>
+          <nz-list-item-action>
+          <button
+          nz-popconfirm
+          nzPopconfirmTitle="Title"
+          [nzBeforeConfirm]="beforeConfirm"
+          (nzOnConfirm)="confirm(item)"
+          (nzOnCancel)="cancel()"
+          nz-button
+          nzType="link"
+          nzDanger="true"
+          [nzCancelText]="'No'"
+          [nzOkText]="'Yes'"
+          nzPopconfirmTitle="Are you sure you want to delete this user?"
+        >
+        <span nz-icon nzType="delete" nzTheme="outline"></span>
+        </button>
+        <!-- (click)="delete(item)" -->
+        </nz-list-item-action>
         </ul>
       </nz-list-item>
       } }

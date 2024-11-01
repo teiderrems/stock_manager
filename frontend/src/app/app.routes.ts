@@ -8,6 +8,7 @@ import { UserComponent } from './admin/user/user.component';
 import { ResetPasswordComponent } from './account/reset-password/reset-password.component';
 import { CommentComponent } from './comment/comment.component';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
+import { isAdminOrGuestGuard } from './account/auth/is-admin-or-guest.guard';
 // import { FooterComponent } from './footer/footer.component';
 
 export const routes: Routes = [
@@ -68,7 +69,8 @@ export const routes: Routes = [
         data: {
             breadcrumb: 'Users'
         },
-        pathMatch:'full'
+        pathMatch:'full',
+        // canActivate:[isAdminOrGuestGuard],
     },
     {
         path:"reset-password",

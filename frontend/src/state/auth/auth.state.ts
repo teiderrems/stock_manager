@@ -51,7 +51,6 @@ export class AuthState {
     return this.authService.login(payload).pipe(
       exhaustMap((value) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
           new AuthAction.LoginSuccessAction(value),
           AuthAction.UpdateLoadingAction,
@@ -60,7 +59,6 @@ export class AuthState {
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
           AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,
@@ -77,7 +75,6 @@ export class AuthState {
     return this.userService.getUserByUsername(username).pipe(
       exhaustMap((value) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateLoadingAction,
           new AuthenticateUserSuccess(value),
           AuthAction.UpdateSuccessAction
@@ -85,7 +82,6 @@ export class AuthState {
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
@@ -110,14 +106,12 @@ export class AuthState {
     return this.authService.register(payload).pipe(
       exhaustMap(() =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
           AuthAction.UpdateLoadingAction,
         ])
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
           AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,
@@ -134,14 +128,12 @@ export class AuthState {
     return this.authService.resetPassword(payload).pipe(
       exhaustMap(() =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
           AuthAction.UpdateLoadingAction,
         ])
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
           AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,
@@ -158,14 +150,12 @@ export class AuthState {
     return this.authService.forgotPassword(payload).pipe(
       exhaustMap(() =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateLoadingAction,
           AuthAction.UpdateSuccessAction
         ])
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
           AuthAction.UpdateLoadingAction,
           AuthAction.UpdateIsErrorAction
@@ -182,7 +172,6 @@ export class AuthState {
     return this.authService.refreshToken(payload.refreshToken).pipe(
       exhaustMap((value) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           AuthAction.UpdateSuccessAction,
           AuthAction.UpdateLoadingAction,
           new AuthAction.RefreshTokenSuccessAction(value),
@@ -190,7 +179,6 @@ export class AuthState {
       ),
       catchError((error) =>
         ctx.dispatch([
-          AuthAction.ResetBooleanField,
           new AuthAction.ActionOnAuthFailled(error.message, error.status),
           AuthAction.UpdateIsErrorAction,
           AuthAction.UpdateLoadingAction,

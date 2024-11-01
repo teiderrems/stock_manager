@@ -25,7 +25,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { PictureComponent } from '../../../../picture/picture.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { LoadRoleAction } from '../../../../../state/role/role.actions';
-import { PostUserAction } from '../../../../../state/user/user.actions';
+import { PostUserAction, ResetBooleanField } from '../../../../../state/user/user.actions';
 import { UserState } from '../../../../../state/user/user.state';
 import { PictureService } from '../../../../picture/picture.service';
 import { catchError, tap } from 'rxjs/operators';
@@ -45,6 +45,7 @@ import { catchError, tap } from 'rxjs/operators';
   ],
   templateUrl: './add-user.component.html',
   styleUrl: './add-user.component.css',
+  
 })
 export class AddUserComponent implements OnInit {
   ngOnInit(): void {
@@ -60,12 +61,12 @@ export class AddUserComponent implements OnInit {
   authState = this.store.selectSignal(AuthState.getState);
 
   roleState = this.store.selectSignal(RoleState.getState);
-  userState = this.store.selectSignal(UserState.getState);
+  isSuccess = this.store.selectSignal(UserState.IsSuccess);
 
   addRole = signal(false);
 
   submitForm(): void {
-    console.log(this.picture());
+    this.store.dispatch(ResetBooleanField);
     if (this.register.valid && this.picture() > 0) {
       this.store.dispatch(
         new PostUserAction({
@@ -73,9 +74,10 @@ export class AddUserComponent implements OnInit {
           pictureId: this.picture(),
         })
       );
-      if (this.userState().isSuccess) {
+      if (this.isSuccess()) {
         this.isSubmit.set(false);
-        console.log(this.userState().users);
+        this.close.emit();
+        this.store.dispatch(ResetBooleanField);
       }
     }
   }
@@ -130,7 +132,7 @@ export class AddUserComponent implements OnInit {
               this.picture.set(value!);
             });
         }
-      },
+      }
     });
   }
 }
