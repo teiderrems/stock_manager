@@ -2,6 +2,7 @@ using backend.Data;
 using backend.Dto;
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -90,11 +91,13 @@ builder.Services.AddSwaggerGen((c) =>
 var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options=>{
-        options.DocumentTitle="Store Management";
+    app.UseSwaggerUI(options =>
+    {
+        options.DocumentTitle = "Store Management";
+        options.SwaggerEndpoint("/swagger/v1/swagger.json","MY API V1");
     });
 }
 
