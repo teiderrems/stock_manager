@@ -3,7 +3,7 @@ img{
 }
 
 .profile{
-    @apply flex space-x-2 items-center hover:cursor-pointer
+    @apply flex items-center hover:cursor-pointer
 }
 
 a{

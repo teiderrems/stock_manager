@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 
@@ -11,7 +11,10 @@ import { NzResultModule } from 'ng-zorro-antd/result';
   templateUrl: './notfound.component.html',
   styleUrl: './notfound.component.css'
 })
-export class NotfoundComponent {
+export class NotfoundComponent implements OnInit {
+  ngOnInit(): void {
+    console.log(this.router.routerState);
+  }
 
 
   router=inject(Router);

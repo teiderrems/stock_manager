@@ -9,7 +9,7 @@ import { ResetPasswordComponent } from './account/reset-password/reset-password.
 import { CommentComponent } from './comment/comment.component';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
 import { isAdminOrGuestGuard } from './account/auth/is-admin-or-guest.guard';
-// import { FooterComponent } from './footer/footer.component';
+import { matchRouteGuard } from './account/auth/match-route.guard';
 
 export const routes: Routes = [
     {
@@ -21,7 +21,8 @@ export const routes: Routes = [
         pathMatch:"full",
         data: {
             breadcrumb: 'Items'
-        }
+        },
+        title:"Item Page"
     },
     {
         path:"items/:itemId/comments",
@@ -29,7 +30,8 @@ export const routes: Routes = [
         pathMatch:"full",
         data: {
             breadcrumb: 'Comments'
-        }
+        },
+        title:"Comment Page"
     },
     {
         path:'home',
@@ -37,7 +39,8 @@ export const routes: Routes = [
         pathMatch:"full",
         data: {
             breadcrumb: 'Home'
-        }
+        },
+        title:"Home Page"
     },
     {
         path:'login',
@@ -45,7 +48,10 @@ export const routes: Routes = [
         ,pathMatch:"full",
         data: {
             breadcrumb: 'Login'
-        }
+        },
+        // canMatch:[matchRouteGuard],
+        title:"Login Page",
+        canActivate:[isAdminOrGuestGuard]
     },
     {
         path:'register',
@@ -53,7 +59,10 @@ export const routes: Routes = [
         ,pathMatch:"full",
         data: {
             breadcrumb: 'Register'
-        }
+        },
+        // canMatch:[matchRouteGuard],
+        title:"Register Page",
+        canActivate:[isAdminOrGuestGuard]
     },
     {
         path:"admin/items",
@@ -61,7 +70,8 @@ export const routes: Routes = [
         data: {
             breadcrumb: 'AdminItems'
         },
-        pathMatch:'full'
+        pathMatch:'full',
+        title:"AdminItem Page"
     },
     {
         path:"admin/users",
@@ -70,7 +80,8 @@ export const routes: Routes = [
             breadcrumb: 'Users'
         },
         pathMatch:'full',
-        // canActivate:[isAdminOrGuestGuard],
+        canActivate:[isAdminOrGuestGuard],
+        title:"User Page"
     },
     {
         path:"reset-password",
@@ -78,10 +89,12 @@ export const routes: Routes = [
         data: {
             breadcrumb: 'ResetPassword'
         },
-        pathMatch:'full'
+        pathMatch:'full',
+        title:"Reset Password Page"
     },
     {
         path:'**',
-        component:NotfoundComponent
+        component:NotfoundComponent,
+        title:"404 Page"
     }
 ];

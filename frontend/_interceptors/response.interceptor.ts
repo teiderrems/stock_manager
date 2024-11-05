@@ -3,7 +3,7 @@ import { Store } from '@ngxs/store';
 import { AuthState } from '../src/state/auth/auth.state';
 import { ActionOnAuthFailled, RefreshTokenAction } from '../src/state/auth/auth.actions';
 
-import { HttpEvent, HttpResponse, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpEvent, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, exhaustMap, map, throwError } from 'rxjs';
 
 
@@ -16,9 +16,8 @@ export const responseInterceptor: HttpInterceptorFn = (req, next) => {
       return event;
     }),
     catchError((error: HttpErrorResponse) => {
-
-      if (error.status==401 || error.message.includes("Unauthorized")) {
-
+      
+      if (error.status==401 || error.message.includes("401 Unauthorized")) {
         exhaustMap(()=>store.dispatch(new RefreshTokenAction({refreshToken:refreshToken()})));
       }
       

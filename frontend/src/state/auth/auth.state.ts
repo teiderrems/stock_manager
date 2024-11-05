@@ -235,12 +235,23 @@ export class AuthState {
 
   @Action(AuthAction.UpdateLoadingAction)
   updateIsLoading(ctx: StateContext<AuthStateModel>) {
-    ctx.setState((state) => ({ ...state, isLoading: !state.isLoading }));
+    ctx.setState((state) => ({ ...state, isLoading: false }));
   }
 
   @Action(AuthAction.UpdateSuccessAction)
   updateIsSuccess(ctx: StateContext<AuthStateModel>) {
-    ctx.setState((state) => ({ ...state, isSuccess: !state.isSuccess }));
+    ctx.setState((state) => ({ ...state, isSuccess: true }));
+  }
+
+  @Action(AuthAction.ResetBooleanField)
+  resetBooleanField(ctx:StateContext<AuthStateModel>){
+    ctx.patchState(
+      {
+      error:{},
+      isSuccess:false,
+      isError:false,
+      isLoading:true
+    });
   }
 
   @Action(AuthAction.UpdateIsErrorAction)

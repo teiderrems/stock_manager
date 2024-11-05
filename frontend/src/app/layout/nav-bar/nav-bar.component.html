@@ -1,8 +1,10 @@
 <nav>
-    <a routerLink="/home" class="flex space-x-2 items-center leading-10" routerLinkActive="active"  ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true} mat-fab aria-label="Example icon button with a add icon">
+    <a routerLink="/home" class="flex space-x-2 items-center leading-5" routerLinkActive="active"  ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true} mat-fab aria-label="Example icon button with a add icon">
         
-        <span class="">Home</span>
+        <span nz-icon nzType="home" nzTheme="outline"></span><span class="">Home</span>
     </a>
-    <a routerLink="/items" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}>Items</a>
-    <a routerLink="/admin/users" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}>Users</a>
+    <a routerLink="/items"  class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="appstore" nzTheme="outline"></span><span>Items</span></a>
+    @if (isAdmin()) {
+        <a routerLink="/admin/users" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="user" nzTheme="outline"></span><span>Users</span></a>
+    }
 </nav>

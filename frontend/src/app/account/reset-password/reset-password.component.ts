@@ -7,7 +7,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { AuthState } from '../../../state/auth/auth.state';
-import { ResetPasswordAction } from '../../../state/auth/auth.actions';
+import { ResetBooleanField, ResetPasswordAction } from '../../../state/auth/auth.actions';
 
 @Component({
   selector: 'app-reset-password',
@@ -46,7 +46,7 @@ export class ResetPasswordComponent{
   ResetPassword(){
 
     if (this.resetPassword.valid) {
-
+      this.store.dispatch(ResetBooleanField);
       this.store.dispatch(new ResetPasswordAction(
         {email:this.resetPassword.getRawValue().email!,
           resetCode:this.resetPassword.getRawValue().resetCode!,

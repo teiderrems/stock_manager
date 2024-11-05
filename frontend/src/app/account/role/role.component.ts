@@ -30,6 +30,8 @@ export class RoleComponent {
   PostRole() {
     this.store.dispatch(ResetBooleanField);
     if (this.role.valid) {
+      
+      this.store.dispatch(ResetBooleanField);
       this.store.dispatch(new PostRoleAction(this.role.getRawValue() as {name:string}));
       if (this.isSuccess()) {
         this.isSubmit.set(false);
