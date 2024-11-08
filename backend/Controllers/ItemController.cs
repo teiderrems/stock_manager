@@ -26,10 +26,27 @@ namespace backend.Controllers
 
             var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
             _logger.LogInformation("Item List");
+            var categories = HttpContext.Request.Query["categories"].ToString().Split(',');
+            IQueryable<Item>? Items = null;
+            if (categories.Length>0)
+            {
+                foreach (var cat in categories)
+                {
+                    Items = _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
+                .AsSplitQuery().Include(i => i.Image).AsSplitQuery().Where(item => item!.Categories!.Contains(new Categorie() { Name=cat})).AsSplitQuery();
+                }
+            }
+            else
+            {
+                Items = _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
+                .AsSplitQuery().Include(i => i.Image).AsSplitQuery();
+            }
+
             var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x => x.Name));//.Descending(x => x.Id)
             var itemsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
-                .AsSplitQuery().Include(i => i.Image).AsSplitQuery(),
+                //_context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
+                //.AsSplitQuery().Include(i => i.Image).AsSplitQuery().Where(item=>item.Categories.Where(c=>c.Name=)),
+                 Items!,
                 _itemsKeysetQuery,
                 async id => await _context.Items.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new ItemDto(

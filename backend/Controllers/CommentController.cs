@@ -62,7 +62,7 @@ namespace backend.Controllers
                     Title = comment.Title!,
                     Message=comment.Content,
                     Item= (await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId))!,
-                    Owner= (await _context.Users.FirstOrDefaultAsync(c => c.UserName == User.Identity.Name))!
+                    Owner= (await _context.Users.FirstOrDefaultAsync(c => c.UserName == User.Identity!.Name))!
                 };
 
                 _context.Comments.Add(currentComment);
