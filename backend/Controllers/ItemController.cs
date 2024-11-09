@@ -26,15 +26,14 @@ namespace backend.Controllers
 
             var imageUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/pictures/";
             _logger.LogInformation("Item List");
-            var categories = HttpContext.Request.Query["categories"].ToString().Split(',');
+            var categorie = HttpContext.Request.Query["categorie"].ToString();
+            var name =HttpContext.Request.Query["name"].ToString();
             IQueryable<Item>? Items = null;
-            if (categories.Length>0)
+            if (categorie.Length>0)
             {
-                foreach (var cat in categories)
-                {
-                    Items = _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
-                .AsSplitQuery().Include(i => i.Image).AsSplitQuery().Where(item => item!.Categories!.Contains(new Categorie() { Name=cat})).AsSplitQuery();
-                }
+                var cat = _context.Categories.FirstOrDefault(c => c.Name == categorie);
+                Items = _context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
+                .AsSplitQuery().Include(i => i.Image).AsSplitQuery().Where(item => item!.Categories!.Contains(cat!)).AsSplitQuery();
             }
             else
             {
@@ -42,10 +41,30 @@ namespace backend.Controllers
                 .AsSplitQuery().Include(i => i.Image).AsSplitQuery();
             }
 
+            if (name.Length>0)
+            {
+                Items = Items.Where(item => item.Name.Contains(name));
+            }
+
+            var minPrice=HttpContext.Request.Query["minPrice"].ToString();
+            var maxPrice = HttpContext.Request.Query["maxPrice"].ToString();
+            var order=HttpContext.Request.Query["order"].ToString();
+
+            if (minPrice!=null)
+            {
+                Items = Items.Where(item => ((decimal)item.MinPrice) <= decimal.Parse(minPrice));
+            }
+            if (maxPrice != null)
+            {
+                Items = Items.Where(item => ((decimal)item.MaxPrice) <= decimal.Parse(maxPrice));
+            }
+
+            if (order != null) {
+                Items = Items.OrderBy(item => item.Name).OrderDescending();
+            }
+
             var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x => x.Name));//.Descending(x => x.Id)
             var itemsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                //_context.Items.Include(i => i.Comments).AsSplitQuery().Include(i => i.Categories)
-                //.AsSplitQuery().Include(i => i.Image).AsSplitQuery().Where(item=>item.Categories.Where(c=>c.Name=)),
                  Items!,
                 _itemsKeysetQuery,
                 async id => await _context.Items.FindAsync(int.Parse(id)),
@@ -55,7 +74,7 @@ namespace backend.Controllers
                     item.MinPrice,
                     item.MaxPrice,
                     item.Description,
-                    $"{imageUrl}{item.Image!.Id}",
+                    item.Image!=null?$"{imageUrl}{item.Image!.Id}":"",
                     item.Categories, item.Comments,
                     item.CreatedAt, item.UpdatedAt, item.ExpirationAt))
                 );
@@ -77,7 +96,7 @@ namespace backend.Controllers
                     item.StockQuantity,
                     item.MinPrice,
                     item.MaxPrice,
-                    item.Description, $"{imageUrl}{item.Image!.Id}",
+                    item.Description, item.Image!=null?$"{imageUrl}{item.Image!.Id}":"",
                     item.Categories, item.Comments,
                     item.CreatedAt, item.UpdatedAt, item.ExpirationAt) : NotFound();
             }
@@ -89,14 +108,10 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> AddItem(CreateItemDto item)
         {
-            //var user = await _context.Users.Include(u=>u.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            //if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            //{
-            //    return Unauthorized();
-            //}
+            
             if (item == null)
             {
                 return NotFound();
@@ -138,11 +153,7 @@ namespace backend.Controllers
 
         public async Task<ActionResult<Item>> UpdateItem(int id, UpdateItemDto item)
         {
-            var user = await _context.Users.Include(i=>i.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
+            
             if (item == null)
             {
                 return BadRequest();
@@ -179,15 +190,9 @@ namespace backend.Controllers
 
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var user = await _context.Users.Include(u=>u.Roles).FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            if (!user!.Roles!.Any(r => r.Name == "admin" || r.Name == "guest"))
-            {
-                return Unauthorized();
-            }
             try
             {
                 var item = await _context.Items.FindAsync(id);
-                Console.WriteLine(item);
                 if (item == null)
                 {
                     _logger.LogWarning($" Item identified by id {id} don't exist in the Database");
@@ -204,23 +209,5 @@ namespace backend.Controllers
                 return NotFound(ex);
             }
         }
-
-        // private static string[] GetImageUrl(Item item, HttpContext httpContext)
-        // {
-        //     List<string> ImageUrlList = [];
-        //     if (item.Images != null)
-        //     {
-        //         item.Images.ForEach(p => System.Console.WriteLine(p.Id));
-        //         var imageUrl = $"{httpContext.Request.Protocol.Split('/')[0]}://{httpContext.Request.Host}/api/pictures/";
-
-        //         if (item != null && item.Images != null)
-        //         {
-        //             item.Images.ForEach(p => ImageUrlList.Add($"{imageUrl}{p!.Id}"));
-        //         }
-        //         return [.. ImageUrlList];
-        //     }
-        //     System.Console.WriteLine("Image empty");
-        //     return [.. ImageUrlList];
-        // }
     }
 }
