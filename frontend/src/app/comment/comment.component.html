@@ -10,7 +10,7 @@
     <span nz-icon nzType="plus" nzTheme="outline"></span>
   </button>
 </div>
-<main class="px-4 row-span-11 row-start-2 overflow-y-auto grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
+<main class="px-4 row-span-10 row-start-2 overflow-y-auto grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
   <nz-list [nzDataSource]="commentState().comments.data" [nzRenderItem]="item" [nzItemLayout]="'horizontal'">
     <ng-template #item let-item>
       <nz-comment [nzAuthor]="item.owner" nzDatetime="{{item.createdAt}}">
@@ -23,6 +23,9 @@
     </ng-template>
   </nz-list>
 </main>
+  <div class="row-span-1 px-4  flex justify-end items-center">
+    <nz-pagination [nzPageIndex]="1" (nzPageIndexChange)="updatePage($event)" (nzPageSizeChange)="updateLimit($event)" [nzHideOnSinglePage]="true" [nzPageSizeOptions]="[5,10,15,20,25,30]" [nzTotal]="commentState().comments.totalCount" [nzResponsive]="true" nzShowSizeChanger [nzPageSize]="commentState().comments.pageSize"></nz-pagination>
+  </div>
 </div>
 
 <nz-modal [nzVisible]="showAddForm()" [nzMask]="true" [nzMaskClosable]="true" nzTitle="The first Modal" (nzOnCancel)="handleCancel()" [nzCancelText]="null" [nzFooter]="null" [nzOkText]="null">

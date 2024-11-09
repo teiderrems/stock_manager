@@ -11,8 +11,8 @@ export class CommentService {
 
   constructor(private readonly constantService:ConstantService,private readonly http:HttpClient) { }
 
-  getAllComment(itemId:number):Observable<CommentResponseBody>{
-    return this.http.get<CommentResponseBody>(this.constantService.getBaseUrl()+`items/${itemId}/comments`);
+  getAllComment(itemId:number,page?:number,limit?:number):Observable<CommentResponseBody>{
+    return this.http.get<CommentResponseBody>(this.constantService.getBaseUrl()+`items/${itemId}/comments?page=${page}&limit=${limit}`);
   }
 
   getCommentById(id:number,itemId:number):Observable<Comment>{
@@ -24,7 +24,7 @@ export class CommentService {
   }
 
   updateComment(id:number,itemId:number,comment:Comment):Observable<any>{
-    
+
     return this.http.put(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`,comment);
   }
 

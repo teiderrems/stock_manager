@@ -11,8 +11,8 @@ export class ItemService {
 
   constructor(private readonly http:HttpClient,private readonly constantService:ConstantService) { }
 
-  getAllItem(page:number,limit:number):Observable<ItemResponseBody>{
-    return this.http.get<ItemResponseBody>(this.constantService.getBaseUrl()+`items?page=${page}&limit=${limit}`);
+  getAllItem(page:number,limit:number,categorie?:string):Observable<ItemResponseBody>{
+    return this.http.get<ItemResponseBody>(this.constantService.getBaseUrl()+`items?page=${page}&limit=${limit}&categorie=${categorie}`);
   }
 
   getItemById(id:number):Observable<Item>{
@@ -24,7 +24,7 @@ export class ItemService {
   }
 
   updateItem(id:number,item:UpdateItem):Observable<any>{
-    
+
     return this.http.put(this.constantService.getBaseUrl()+`items/${id}`,item);
   }
 

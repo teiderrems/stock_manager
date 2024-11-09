@@ -31,5 +31,8 @@
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="itext7" Version="8.0.5" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="qodana.yaml" />
+  </ItemGroup>
 
 </Project>

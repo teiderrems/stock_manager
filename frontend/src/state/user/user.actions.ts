@@ -9,6 +9,7 @@ export class LoadSuccessAction {
 
 export class LoadUserAction {
   static readonly type = '[User API] Load Users';
+  constructor(public  page?:number,public  limit?:number,public role?:string) {}
 }
 
 
@@ -49,6 +50,10 @@ export class UpdateSuccessAction{
 
 export class UpdateIsErrorAction{
   static readonly type="[User Page] Update IsError";
+}
+
+export class UpdateIsFetchAction{
+  static readonly type="[User Page] Update IsFetch";
 }
 
 export class FetchUserWhoAuthenticate{

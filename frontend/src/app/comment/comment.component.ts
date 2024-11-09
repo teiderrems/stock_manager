@@ -15,6 +15,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
 @Component({
   selector: 'app-comment',
@@ -29,6 +30,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     ReactiveFormsModule,
     NzFormModule,
     NzInputModule,
+    NzPaginationModule
   ],
   templateUrl: './comment.component.html',
   styleUrl: './comment.component.css',
@@ -57,6 +59,18 @@ export class CommentComponent implements OnInit {
   ngOnInit(): void {
     // this.store.dispatch(new LoadCommentAction(this.itemId()!));
   }
+
+  updateLimit(size:number) {
+    this.limit.set(size)
+
+  }
+
+  updatePage(index:number) {
+    this.page.set(index);
+  }
+
+  page=signal(1);
+  limit=signal(20);
 
   currentItemId = signal<number>(0);
   showAddForm = signal(false);

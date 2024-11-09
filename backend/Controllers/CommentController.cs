@@ -23,10 +23,10 @@ namespace backend.Controllers
         {
             _logger.LogInformation("Comment List");
 
-            var _commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
+            var commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
             var commentsPaginationResult = await _paginationService.KeysetPaginateAsync(
                 _context.Comments.Where(c=>c.Item.Id==itemId).Include(c=>c.Owner).AsSingleQuery(),
-                _commentsKeysetQuery,
+                commentsKeysetQuery,
                 async id => await _context.Comments.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new CommentDto(item))
                 );
@@ -50,7 +50,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("{itemId:int}/comments")]
-        public async Task<ActionResult> AddComment(int itemId,CreateCommentDto comment)
+        public async Task<ActionResult> AddComment(int itemId,CreateCommentDto? comment)
         {
             if (comment==null)
             {
@@ -62,7 +62,7 @@ namespace backend.Controllers
                     Title = comment.Title!,
                     Message=comment.Content,
                     Item= (await _context.Items.FirstOrDefaultAsync(c => c.Id == itemId))!,
-                    Owner= (await _context.Users.FirstOrDefaultAsync(c => c.UserName == User.Identity.Name))!
+                    Owner= (await _context.Users.FirstOrDefaultAsync(c => c.UserName == User!.Identity!.Name))!
                 };
 
                 _context.Comments.Add(currentComment);
@@ -75,18 +75,18 @@ namespace backend.Controllers
         }
 
         [HttpPut("{itemId:int}/comments/{id:int}")]
-        public async Task<ActionResult<Comment>> UpdateComment(int itemId, int id,Comment Comment)
+        public async Task<ActionResult<Comment>> UpdateComment(int itemId, int id,Comment? comment)
         {
-            if (Comment == null)
+            if (comment == null)
             {
                 return BadRequest();
             }
             
             try
             {
-                if (Comment.Id==id && Comment.Item.Id==itemId)
+                if (comment.Id==id && comment.Item.Id==itemId)
                 {
-                    var result=_context.Comments.Update(Comment);
+                    var result=_context.Comments.Update(comment);
                     await _context.SaveChangesAsync();
                     return Ok(result);
                 }

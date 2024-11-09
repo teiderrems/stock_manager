@@ -8,11 +8,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  
+
   constructor(private readonly constantService:ConstantService,private readonly http:HttpClient) { }
 
   login(credentiels:Login):Observable<LoginResponseBody>{
-    
+
     let url=this.constantService.getBaseUrl().split("api")[0]+"login";
 
     return this.http.post<LoginResponseBody>(url,credentiels);
@@ -27,6 +27,7 @@ export class AuthService {
 
   refreshToken(refresh:string):Observable<LoginResponseBody>{
     let url=this.constantService.getBaseUrl().split("api")[0]+"refresh";
+    console.log(url);
     return this.http.post<LoginResponseBody>(url,{
       refreshToken:refresh
     });

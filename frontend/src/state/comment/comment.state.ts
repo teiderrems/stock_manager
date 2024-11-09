@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { LoadSuccessAction,UpdateIsErrorAction,LoadCommentAction, UpdateLoadingAction, UpdateSuccessAction, PostCommentAction, ActionOnCommentFailled, DeleteCommentAction, PutCommentAction, ResetBooleanField } from './comment.actions';
+import {
+  LoadSuccessAction,
+  UpdateIsErrorAction,
+  LoadCommentAction,
+  UpdateLoadingAction,
+  UpdateSuccessAction,
+  PostCommentAction,
+  ActionOnCommentFailled,
+  DeleteCommentAction,
+  ResetBooleanField,
+  UpdateFetchingAction
+} from './comment.actions';
 import { CommentResponseBody } from '../../interfaces';
 import { catchError,mergeMap } from 'rxjs/operators';
 import { CommentService } from '../../app/comment/comment.service';
@@ -14,6 +25,7 @@ export interface CommentStateModel {
     isSuccess:boolean;
     isError:boolean;
     isLoading:boolean;
+    isFetch:boolean;
 }
 
 
@@ -30,7 +42,8 @@ export interface CommentStateModel {
     error:{},
     isSuccess:false,
     isError:false,
-    isLoading:true
+    isLoading:true,
+    isFetch:false
   }
 })
 @Injectable()
@@ -44,53 +57,55 @@ export class CommentState {
   }
 
   @Action(LoadCommentAction)
-  loadComment(ctx: StateContext<CommentStateModel>,{itemId}:LoadCommentAction){
-    
-    return this.commentService.getAllComment(itemId).pipe(
+  loadComment(ctx: StateContext<CommentStateModel>,{itemId,page,limit}:LoadCommentAction){
+    ctx.patchState({isFetch:true});
+    return this.commentService.getAllComment(itemId,page,limit).pipe(
 
-      mergeMap(Comments=>ctx.dispatch([new LoadSuccessAction(Comments),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
-      
+      mergeMap(Comments=>ctx.dispatch([new LoadSuccessAction(Comments),UpdateSuccessAction,UpdateLoadingAction,UpdateFetchingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status),UpdateFetchingAction])),
+
     );
+  }
+
+  @Action(ResetBooleanField)
+  resetBooleanField(ctx:StateContext<CommentStateModel>){
+    ctx.patchState({
+      isSuccess:false,
+      isError:false,
+      isLoading:true,
+      isFetch:false,
+    })
   }
 
   @Action(ActionOnCommentFailled)
   handleError(ctx: StateContext<CommentStateModel>,{message,status}:ActionOnCommentFailled){
-    
+
     ctx.patchState({error:{
       message,
       status
     }});
   }
-  
+
   @Action(PostCommentAction)
   addNewComment(ctx:StateContext<CommentStateModel>,{itemId,comment}:PostCommentAction){
-
+    ctx.patchState({isFetch:true});
     return this.commentService.addComment(comment,itemId).pipe(
-      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
-      
+      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction,UpdateFetchingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status),UpdateFetchingAction])),
+
     );
   }
 
 
-  // @Action(PutCommentAction)
-  // updateComment(ctx:StateContext<CommentStateModel>,{comment,id,itemId}:PutCommentAction){
-
-  //   return this.commentService.updateComment(id,itemId,comment).pipe(
-  //     mergeMap(()=>ctx.dispatch([LoadCommentAction,UpdateSuccessAction,UpdateLoadingAction])),
-  //     catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
-      
-  //   );
-  // }
-
   @Action(DeleteCommentAction)
   deleteComment(ctx:StateContext<CommentStateModel>,{id,itemId}:DeleteCommentAction){
+
+    ctx.patchState({isFetch:true});
     return this.commentService.deleteComment(id,itemId).pipe(
 
-      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status)])),
-      
+      mergeMap(()=>ctx.dispatch([new LoadCommentAction(itemId),UpdateSuccessAction,UpdateFetchingAction,UpdateLoadingAction])),
+      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnCommentFailled(error.message,error.status),UpdateFetchingAction])),
+
     )
   }
 
@@ -104,6 +119,11 @@ export class CommentState {
   updateIsSuccess(ctx:StateContext<CommentStateModel>){
 
     ctx.setState((state)=>({...state,isSuccess:!state.isSuccess}));
+  }
+
+  @Action(UpdateFetchingAction)
+  updateIsFetch(ctx:StateContext<CommentStateModel>){
+    ctx.patchState({isFetch:false});
   }
 
   @Action(UpdateIsErrorAction)
@@ -130,6 +150,11 @@ export class CommentState {
   @Selector()
   static IsSuccess(state:CommentStateModel){
     return state.isSuccess;
+  }
+
+  @Selector()
+  static IsFetching(state:CommentStateModel){
+    return state.isFetch;
   }
 
   @Selector()

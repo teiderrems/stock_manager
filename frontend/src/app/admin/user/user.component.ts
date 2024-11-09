@@ -1,4 +1,4 @@
-import { afterRender, Component, inject, OnInit, signal } from '@angular/core';
+import {  Component, inject, OnInit, signal } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { RoleComponent } from "../../account/role/role.component";
@@ -11,7 +11,7 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { User } from '../../../interfaces';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { catchError, EMPTY, map, Observable } from 'rxjs';
+import {catchError, EMPTY, map, Observable } from 'rxjs';
 
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
@@ -24,12 +24,12 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 })
 export class UserComponent implements OnInit {
 
-  delete(user:User){
-    this.store.dispatch(ResetBooleanField);
-    this.store.dispatch(new DeleteUserAction(user.id!));
-  }
+  // delete(user:User){
+  //   this.store.dispatch(ResetBooleanField);
+  //   this.store.dispatch(new DeleteUserAction(user.id!));
+  // }
 
-  
+
   cancel(): void {
     this.nzMessageService.info('click cancel');
   }
@@ -37,8 +37,8 @@ export class UserComponent implements OnInit {
   confirm(user:User): void {
     this.store.dispatch(ResetBooleanField);
     this.store.dispatch(new DeleteUserAction(user.id!)).pipe(
-      map(value=>{
-        this.nzMessageService.info(user.username + " was deletd successfully");
+      map(()=>{
+        this.nzMessageService.info(user.username + " had be deleted successfully");
       }),
       catchError(error=>{
         this.nzMessageService.error(error.message);
@@ -47,9 +47,6 @@ export class UserComponent implements OnInit {
     ).subscribe(v=>{
       console.log(v);
     });
-    // if (this.userState().isSuccess) {
-    //   this.nzMessageService.info('click confirm'+user.username);
-    // }
   }
 
   beforeConfirm(): Observable<boolean> {
@@ -70,18 +67,18 @@ export class UserComponent implements OnInit {
   }
   ngOnInit(): void {
     this.store.dispatch(ResetBooleanField);
-    this.store.dispatch(LoadUserAction);
+    this.store.dispatch(new LoadUserAction(this.page(),this.limit()));
   }
 
   updateLimit(size:number) {
     this.limit.set(size)
-  
+
   }
-  
+
     updatePage(index:number) {
       this.page.set(index);
     }
-  
+
     page=signal(1);
     limit=signal(20);
 
@@ -90,9 +87,9 @@ export class UserComponent implements OnInit {
   userState=this.store.selectSignal(UserState.getState);
 
   open=signal(false);
-  hiddenModal() {
-    this.open.set(false);
-  }
+  // hiddenModal() {
+  //   this.open.set(false);
+  // }
   toggleModal() {
     this.open.set(true);
   }

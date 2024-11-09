@@ -9,7 +9,7 @@ export class LoadSuccessAction {
 
 export class LoadCommentAction {
   static readonly type = '[Comment API] Load Comments';
-  constructor(public itemId:number){}
+  constructor(public itemId:number,public page?:number,public limit?:number){}
 }
 
 
@@ -31,12 +31,6 @@ export class PostCommentAction{
 }
 
 
-export class PutCommentAction{
-  static readonly type="[Comment API] Update Comment Identify By Id";
-
-  constructor(public comment:Comment,public id:number,public itemId:number){}
-}
-
 
 export class DeleteCommentAction{
   static readonly type="[Comment API] Delete Comment Identify By Id";
@@ -46,6 +40,10 @@ export class DeleteCommentAction{
 
 export class UpdateLoadingAction{
   static readonly type="[Comment Page] Update IsLoading";
+}
+
+export class UpdateFetchingAction{
+  static readonly type="[Comment Page] Update IsFetch";
 }
 
 export class UpdateSuccessAction{

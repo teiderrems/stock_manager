@@ -1,9 +1,26 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { LoadSuccessAction,UpdateIsErrorAction,LoadUserAction, ActionOnUserFailled, PostUserAction,PutUserAction,DeleteUserAction, UpdateLoadingAction, UpdateSuccessAction, FetchUserWhoAuthenticate, FetchUserSuccess, AuthenticateUser, AuthenticateUserSuccess, ResetBooleanField } from './user.actions';
+import {
+  LoadSuccessAction,
+  UpdateIsErrorAction,
+  LoadUserAction,
+  ActionOnUserFailled,
+  PostUserAction,
+  PutUserAction,
+  DeleteUserAction,
+  UpdateLoadingAction,
+  UpdateSuccessAction,
+  FetchUserWhoAuthenticate,
+  FetchUserSuccess,
+  AuthenticateUser,
+  AuthenticateUserSuccess,
+  ResetBooleanField,
+  UpdateIsFetchAction
+} from './user.actions';
 import { User, UserResponseBody } from '../../interfaces';
 import { catchError,exhaustMap,mergeMap } from 'rxjs/operators';
 import { UserService } from '../../app/admin/user/user.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 export interface UserStateModel {
     users: UserResponseBody;
@@ -15,6 +32,7 @@ export interface UserStateModel {
     isError:boolean;
     isLoading:boolean;
     user:User;
+    isFetch:boolean;
 }
 
 
@@ -32,7 +50,8 @@ export interface UserStateModel {
     isSuccess:false,
     isError:false,
     isLoading:true,
-    user:{}
+    user:{},
+    isFetch:false
   }
 })
 @Injectable()
@@ -46,29 +65,33 @@ export class UserState {
   }
 
   @Action(LoadUserAction)
-  loadUser(ctx: StateContext<UserStateModel>){
-    
-    return this.userService.getAllUser().pipe(
-      mergeMap(users=>ctx.dispatch([new LoadSuccessAction(users),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)])) 
+  loadUser(ctx: StateContext<UserStateModel>,{page,limit,role}:LoadUserAction){
+
+    ctx.patchState({isFetch:true});
+    return this.userService.getAllUser(page,limit,role).pipe(
+      mergeMap(users=>ctx.dispatch([new LoadSuccessAction(users),UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>{
+        console.log(error);
+        return ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction])
+      })
     );
   }
 
   @Action(ActionOnUserFailled)
   handleError(ctx: StateContext<UserStateModel>,{message,status}:ActionOnUserFailled){
-    
+
     ctx.patchState({error:{
       message,
       status
     }});
   }
-  
+
   @Action(PostUserAction)
   addNewUser(ctx:StateContext<UserStateModel>,{user}:PostUserAction){
-
+    ctx.patchState({isFetch:true});
     return this.userService.addUser(user).pipe(
-      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     );
   }
 
@@ -76,26 +99,30 @@ export class UserState {
   @Action(PutUserAction)
   updateUser(ctx:StateContext<UserStateModel>,{user,id}:PutUserAction){
 
+    ctx.patchState({isFetch:true});
     return this.userService.updateUser(id,user).pipe(
-      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     );
   }
 
   @Action(DeleteUserAction)
   deleteUser(ctx:StateContext<UserStateModel>,{id}:DeleteUserAction){
+
+    ctx.patchState({isFetch:true});
     return this.userService.deleteUser(id).pipe(
 
-      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     )
   }
 
   @Action(FetchUserWhoAuthenticate)
   loadCurrentUser(ctx: StateContext<UserStateModel>,{username}:FetchUserWhoAuthenticate){
+    ctx.patchState({isFetch:true});
     return this.userService.getUserByUsername(username).pipe(
-      mergeMap((value)=>ctx.dispatch([new FetchUserSuccess(value),UpdateSuccessAction,UpdateLoadingAction])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+      mergeMap((value)=>ctx.dispatch([new FetchUserSuccess(value),UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     )
   }
 
@@ -118,10 +145,16 @@ export class UserState {
 
   @Action(AuthenticateUser)
   getAuthenticateUser(ctx:StateContext<UserStateModel>,{username}:AuthenticateUser){
+    ctx.patchState({isFetch:true});
     return this.userService.getUserByUsername(username).pipe(
-      exhaustMap(value=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction,new AuthenticateUserSuccess(value)])),
-      catchError(error=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status)]))
+      exhaustMap(value=>ctx.dispatch([UpdateSuccessAction,UpdateLoadingAction,new AuthenticateUserSuccess(value),UpdateIsFetchAction])),
+      catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     );
+  }
+
+  @Action(UpdateIsFetchAction)
+  updateIsFetch(ctx:StateContext<UserStateModel>){
+    ctx.patchState({isFetch:false});
   }
 
   @Action(UpdateIsErrorAction)
@@ -139,7 +172,6 @@ export class UserState {
   resetBooleanField(ctx:StateContext<UserStateModel>){
     ctx.patchState(
       {
-      error:{},
       isSuccess:false,
       isError:false,
       isLoading:true

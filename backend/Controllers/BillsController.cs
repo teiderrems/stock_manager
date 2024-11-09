@@ -29,10 +29,10 @@ namespace backend.Controllers
             
             var pdfUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/users/{owner}/bills";
             
-            var _billsKeysetQuery = KeysetQuery.Build<Bill>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
+            var billsKeysetQuery = KeysetQuery.Build<Bill>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
             var billsPaginationResult = await _paginationService.KeysetPaginateAsync(
                 _context.Bills.Include(b=>b.Owner).AsSplitQuery().Where(b=>b.Owner.Id==owner),
-                _billsKeysetQuery,
+                billsKeysetQuery,
                 async id => await _context.Bills.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new BillDto(item.Id, GetItemName(item.Items), item.Title, item.Status, GetFullName(item.Owner), 
                 item.TotalAmount, item.CreatedAt, item.UpdatedAt,$"{pdfUrl}/{item.Id}"))
@@ -131,9 +131,9 @@ namespace backend.Controllers
             return items.Select(item => item.Name).ToList();
         }
 
-        private string GetFullName(ApplicationUser user)
+        private string? GetFullName(ApplicationUser user)
         {
-            return $"{user.Firstname} {user.Lastname}"??user.UserName!;
+            return $"{user.Firstname} {user.Lastname}"??user.UserName;
         }
 
         private static byte[] GeneratePdf(Bill bill)

@@ -1,4 +1,4 @@
-import { CreateItem, Item, ItemResponseBody, UpdateItem } from "../../interfaces";
+import { CreateItem, ItemResponseBody, UpdateItem } from "../../interfaces";
 
 
 
@@ -9,7 +9,7 @@ export class LoadSuccessAction {
 
 export class LoadItemAction {
   static readonly type = '[Item API] Load Items';
-  constructor(public page:number,public limit:number){}
+  constructor(public page:number,public limit:number,public categorie?:string){}
 }
 
 
@@ -50,6 +50,10 @@ export class UpdateSuccessAction{
 
 export class UpdateIsErrorAction{
   static readonly type="[Item Page] Update IsError";
+}
+
+export class UpdateIsFetchAction{
+  static readonly type="[Item Page] Update IsFetch";
 }
 
 export class ResetBooleanField{

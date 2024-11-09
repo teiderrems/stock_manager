@@ -3,9 +3,11 @@ import { State, Action, StateContext, Selector } from '@ngxs/store';
 import * as AuthAction from './auth.actions';
 import { LoginResponseBody, User } from '../../interfaces';
 import { AuthService } from '../../app/account/auth/auth.service';
-import { catchError, exhaustMap } from 'rxjs';
+import {catchError, EMPTY, exhaustMap} from 'rxjs';
 import { AuthenticateUser, AuthenticateUserSuccess } from './auth.actions';
 import { UserService } from '../../app/admin/user/user.service';
+import {Router} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
 
 
 export interface AuthStateModel {
@@ -40,7 +42,8 @@ export interface AuthStateModel {
 export class AuthState {
   constructor(
     private readonly userService: UserService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router:Router
   ) {}
 
   @Action(AuthAction.LoginAction)
@@ -177,12 +180,13 @@ export class AuthState {
           new AuthAction.RefreshTokenSuccessAction(value),
         ])
       ),
-      catchError((error) =>
-        ctx.dispatch([
-          new AuthAction.ActionOnAuthFailled(error.message, error.status),
-          AuthAction.UpdateIsErrorAction,
-          AuthAction.UpdateLoadingAction,
-        ])
+      catchError((error:HttpErrorResponse) =>{
+        console.log(error);
+          if (error.status==401 || error.message.includes("401")){
+            return  this.router.navigateByUrl("/login",{skipLocationChange:true});
+          }
+          return EMPTY;
+        }
       )
     );
   }

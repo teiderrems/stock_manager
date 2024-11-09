@@ -11,8 +11,8 @@ export class UserService {
 
   constructor(private readonly constantService:ConstantService,private readonly http:HttpClient) { }
 
-  getAllUser():Observable<UserResponseBody>{
-    return this.http.get<UserResponseBody>(this.constantService.getBaseUrl()+'users');
+  getAllUser(page?:number,limit?:number,role?:string):Observable<UserResponseBody>{
+    return this.http.get<UserResponseBody>(this.constantService.getBaseUrl()+`users?page=${page}&limit=${limit}&role=${role}`);
   }
 
   getUserById(id:number):Observable<User>{
@@ -25,7 +25,7 @@ export class UserService {
   }
 
   updateUser(id:number,user:UpdateUser):Observable<any>{
-    
+
     return this.http.put(this.constantService.getBaseUrl()+`users/${id}`,user);
   }
 
@@ -34,7 +34,7 @@ export class UserService {
   }
 
   getUserByUsername(username:string):Observable<User>{
-    
+
     return this.http.get<User>(this.constantService.getBaseUrl()+`users/${username}`);
   }
 }
