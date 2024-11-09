@@ -25,17 +25,20 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<KeysetPaginationResult<UserDto>>> GetUsers()
         {
-            //var user = await _context.Users.Include(u=>u.Roles).AsSplitQuery().FirstOrDefaultAsync(u => u.UserName == User.Identity!.Name);
-            //var roles= GetRoles(user!.Roles);
+            IQueryable<ApplicationUser>? Users = null;
+            var role = HttpContext.Request.Query["role"].ToString();
+            if (role == null)
+            {
+                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery();
+            }
+            else
+            {
+                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().Where(u => u.Roles!.Contains(new IdentityRole<int>() { Name = role })).AsSplitQuery();
+            }
 
-            //if (user != null && !(roles.Any(r=>r.EndsWith("admin") || r.EndsWith("guest"))))
-            //{
-            //    return Unauthorized();
-            //}
-            
             var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)
             var usersPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery(),
+                Users,
                 _usersKeysetQuery,
                 async id => await _context.Users.FindAsync(int.Parse(id)),
                 query => query.Select((item) => new UserDto(item.Id, item.UserName, item.Firstname, item.Lastname,

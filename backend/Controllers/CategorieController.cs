@@ -40,16 +40,16 @@ namespace backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddCategorie(Categorie categorie)
+        public async Task<IActionResult> AddCategorie(CreateCategorieDto categorie)
         {
             if (categorie==null)
             {
                 return NotFound(); 
             }
             try {
-                _context.Categories.Add(categorie);
+                _context.Categories.Add(new Categorie() { Name=categorie.Name,Description=categorie.Description});
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCategorieById), new { Id = categorie.Id }, categorie);
+                return CreatedAtAction(nameof(GetCategorieById), new { categorie.Id }, categorie);
             }
             catch (Exception ex) { 
                 return BadRequest(ex);
@@ -58,7 +58,7 @@ namespace backend.Controllers
 
         [HttpPut("{id:int}")]
         [Authorize]
-        public async Task<ActionResult<Categorie>> UpdateCategorie( int id,Categorie categorie)
+        public async Task<ActionResult<Categorie>> UpdateCategorie( int id,CategorieDto categorie)
         {
             
             if (categorie == null)
@@ -70,7 +70,7 @@ namespace backend.Controllers
             {
                 if (categorie.Id==id)
                 {
-                    var result=_context.Categories.Update(categorie);
+                    var result=_context.Categories.Update(new Categorie() { Name= categorie.Name!, Description=categorie.Description,Id= categorie.Id});
                     await _context.SaveChangesAsync();
                     return Ok(result);
                 }

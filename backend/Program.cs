@@ -97,7 +97,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI(options =>
     {
         options.DocumentTitle = "Store Management";
-        options.SwaggerEndpoint("/swagger/v1/swagger.json","MY API V1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MY API V1");
     });
 }
 
