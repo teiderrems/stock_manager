@@ -27,13 +27,13 @@ namespace backend.Controllers
         {
             IQueryable<ApplicationUser>? Users = null;
             var role = HttpContext.Request.Query["role"].ToString();
-            if (role == null)
+            if (role.Length==0)
             {
                 Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery();
             }
             else
             {
-                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().Where(u => u.Roles!.Contains(new IdentityRole<int>() { Name = role })).AsSplitQuery();
+                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().Where(u => u.Roles!.Contains(_context.Roles.FirstOrDefault(r=>r.Name==role)!)).AsSplitQuery();
             }
 
             var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)

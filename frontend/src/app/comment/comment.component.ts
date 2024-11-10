@@ -16,6 +16,7 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { AuthState } from '../../state/auth/auth.state';
 
 @Component({
   selector: 'app-comment',
@@ -85,11 +86,15 @@ export class CommentComponent implements OnInit {
   private readonly store = inject(Store);
   // itemId=input<number>();
 
+  isAuthenticate=this.store.selectSignal(AuthState.isAuthenticate);
+
   @Input('itemId')
   set itemId(itemId: number) {
     this.currentItemId.set(itemId);
     this.store.dispatch(new LoadCommentAction(itemId));
   }
+
+  
 
   commentState = this.store.selectSignal(CommentState.getState);
 }

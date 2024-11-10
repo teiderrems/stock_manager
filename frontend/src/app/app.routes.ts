@@ -10,6 +10,8 @@ import { CommentComponent } from './comment/comment.component';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
 import { isAdminOrGuestGuard } from './account/auth/is-admin-or-guest.guard';
 import { matchRouteGuard } from './account/auth/match-route.guard';
+import { AdminComponent } from './admin/user/admin/admin.component';
+import { GuestComponent } from './admin/user/guest/guest.component';
 
 export const routes: Routes = [
     {
@@ -49,7 +51,6 @@ export const routes: Routes = [
         data: {
             breadcrumb: 'Login'
         },
-        // canMatch:[matchRouteGuard],
         title:"Login Page",
         canActivate:[isAdminOrGuestGuard]
     },
@@ -60,7 +61,6 @@ export const routes: Routes = [
         data: {
             breadcrumb: 'Register'
         },
-        // canMatch:[matchRouteGuard],
         title:"Register Page",
         canActivate:[isAdminOrGuestGuard]
     },
@@ -81,7 +81,27 @@ export const routes: Routes = [
         },
         pathMatch:'full',
         canActivate:[isAdminOrGuestGuard],
-        title:"User Page"
+        title:"User Page",
+    },
+    {
+        path:"admin/users/admin",
+        component:AdminComponent,
+        pathMatch:'full',
+        canActivate:[isAdminOrGuestGuard],
+        title:"Admin User Page",
+        data:{
+            breadcrumb:"AdminUsers"
+        }
+    },
+    {
+        path:'admin/users/guest',
+        component:GuestComponent,
+        pathMatch:'full',
+        canActivate:[isAdminOrGuestGuard],
+        title:"Guest User Page",
+        data:{
+            breadcrumb:"GuestUsers"
+        }
     },
     {
         path:"reset-password",

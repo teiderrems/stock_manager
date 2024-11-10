@@ -1,11 +1,10 @@
 import {
   Component,
-  ChangeDetectionStrategy,
   inject,
   OnInit,
   signal,
-  EventEmitter,
   computed,
+  afterRender,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Store } from '@ngxs/store';
@@ -52,11 +51,13 @@ updateLimit(size:number) {
   toggleModal() {
     this.open.set(true);
   }
-  constructor(private readonly titleService: Title) {}
+  constructor(private readonly titleService: Title) {
+  }
 
   private readonly store = inject(Store);
 
   open = signal<boolean>(false);
+  categorie=signal("");
 
   currentUser=this.store.selectSignal(AuthState.getUser);
 
@@ -70,6 +71,6 @@ updateLimit(size:number) {
   }
 
   loadItems() {
-    this.store.dispatch(new LoadItemAction(this.page(),this.limit()));
+    this.store.dispatch(new LoadItemAction(this.page(),this.limit(),this.categorie()));
   }
 }

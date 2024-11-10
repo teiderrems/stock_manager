@@ -19,6 +19,7 @@ namespace backend.Controllers
         private readonly IPaginationService _paginationService = paginationService;
 
         [HttpGet("{itemId:int}/comments",Name = "List Comment")]
+        [AllowAnonymous]
         public async Task<KeysetPaginationResult<CommentDto>> GetAllComment(int itemId)
         {
             _logger.LogInformation("Comment List");
@@ -35,6 +36,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("{itemId:int}/comments/{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<CommentDto>> GetCommentById(int itemId, int id)
         {
             try

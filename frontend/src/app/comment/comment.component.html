@@ -2,13 +2,15 @@
   <div
   class="row-span-1 row-start-1 px-4 rounded-t-md flex justify-between items-center"
 >
-  <h1 class="text-gray-700">Item List</h1>
-  <button
+  <h1 class="text-gray-700">Comment List</h1>
+  @if (isAuthenticate()) {
+    <button
     (click)="showAddForm.set(true)"
     class="bg-opacity-50 text-green-400 text-3xl rounded-full"
   >
     <span nz-icon nzType="plus" nzTheme="outline"></span>
   </button>
+  }
 </div>
 <main class="px-4 row-span-10 row-start-2 overflow-y-auto grid grid-rows-6 overflow-hidden gap-2 grid-cols-1">
   <nz-list [nzDataSource]="commentState().comments.data" [nzRenderItem]="item" [nzItemLayout]="'horizontal'">

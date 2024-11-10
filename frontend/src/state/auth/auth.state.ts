@@ -181,7 +181,7 @@ export class AuthState {
         ])
       ),
       catchError((error:HttpErrorResponse) =>{
-        console.log(error);
+        
           if (error.status==401 || error.message.includes("401")){
             return  this.router.navigateByUrl("/login",{skipLocationChange:true});
           }

@@ -27,7 +27,6 @@ export class AuthService {
 
   refreshToken(refresh:string):Observable<LoginResponseBody>{
     let url=this.constantService.getBaseUrl().split("api")[0]+"refresh";
-    console.log(url);
     return this.http.post<LoginResponseBody>(url,{
       refreshToken:refresh
     });
