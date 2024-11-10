@@ -48,19 +48,14 @@ namespace backend.Controllers
 
             var minPrice=HttpContext.Request.Query["minPrice"].ToString();
             var maxPrice = HttpContext.Request.Query["maxPrice"].ToString();
-            var order=HttpContext.Request.Query["order"].ToString();
 
-            if (minPrice!=null)
+            if (minPrice.Length > 0 && double.Parse(minPrice) is double)
             {
-                Items = Items.Where(item => ((decimal)item.MinPrice) <= decimal.Parse(minPrice));
+                Items = Items.Where(item => item.MinPrice <= double.Parse(minPrice));
             }
-            if (maxPrice != null)
+            if (maxPrice.Length>0 && double.Parse(maxPrice) is double)
             {
-                Items = Items.Where(item => ((decimal)item.MaxPrice) <= decimal.Parse(maxPrice));
-            }
-
-            if (order != null) {
-                Items = Items.OrderBy(item => item.Name).OrderDescending();
+                Items = Items.Where(item => item.MaxPrice <= double.Parse(maxPrice));
             }
 
             var _itemsKeysetQuery = KeysetQuery.Build<Item>(b => b.Descending(x => x.Name));//.Descending(x => x.Id)
@@ -108,7 +103,6 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> AddItem(CreateItemDto item)
         {
             
