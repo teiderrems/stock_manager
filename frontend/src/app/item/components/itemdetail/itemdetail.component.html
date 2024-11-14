@@ -1,31 +1,49 @@
 
-  <nz-card nzHoverable style="width:240px;height: 280px; border-radius: 5px;"  [nzCover]="coverTemplate" [nzActions]="[comment,edit]">
-    <nz-card-meta [nzTitle]="currentItem()?.name!" [nzDescription]="tag">
-      
-    </nz-card-meta>
-  </nz-card>
-<ng-template #coverTemplate>
+ <ng-template #coverTemplate>
   <img alt="example" nz-image [nzSrc]="currentItem()?.imageUrl!"/>
 </ng-template>
 
 <ng-template #comment>
-  <span nz-icon (click)="ShowComment()" nzType="comment" nzTheme="outline"></span>
+  <span nz-icon class="text-2xl pr-1" (click)="ShowComment()"  nzType="comment" nzTheme="outline"></span>
 </ng-template>
 
 <ng-template #edit>
-  <span nz-icon nzType="edit" nzTheme="outline"></span>
+  
+  <button nz-button class="text-3xl" [nzType]="'text'" ><span nz-icon  nzType="edit" nzTheme="outline"></span></button>
 </ng-template>
 
 <ng-template #tag>
-  <div class="flex space-x-2">
-    @for (item of currentItem()?.categories; track item.id) {
-      <nz-tag [nzColor]="'gray'" [nzMode]="'checkable'">{{item.name}}</nz-tag>
-    }
+  <h1 class=" font-thin p-1">{{currentItem()?.name}}</h1>
+  <div class="flex justify-between">
+    <nz-avatar-group class="pb-1 pl-1">
+      @for (item of currentItem()?.categories; track item.id) {
+        <nz-avatar style="background-color: grey" [nzText]="item.name"></nz-avatar>
+      }
+  </nz-avatar-group>
+  @if (isAdminOrGuest()) {
+    <div *ngTemplateOutlet="edit">
+
+    </div>
+  }
+  <div *ngTemplateOutlet="comment" class="bg-black"></div>
   </div>
 </ng-template>
 
 <ng-template #container>
-  <div class="sm:w-2/4 md:w-1/4 w-full">
-    <img alt="example" [src]="currentItem()?.imageUrl"/>
+  <div class=" w-full h-full">
+    @if (!!currentItem()?.imageUrl) {
+
+      <img alt="example" [src]="currentItem()?.imageUrl"/>
+    }
+    @else {
+      <div class="w-full h-full bg-slate-500 rounded-t-md"></div>
+    }
   </div>
 </ng-template>
+
+<div  class=" rounded-md border hover:cursor-pointer hover:shadow-md sm:w-80 w-60 flex flex-col space-y-2 h-80">
+  <div class=" w-full h-4/6" *ngTemplateOutlet="container">
+
+  </div>
+  <div *ngTemplateOutlet="tag" class="flex flex-col space-y-3"></div>
+</div>

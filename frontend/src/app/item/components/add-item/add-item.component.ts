@@ -100,17 +100,17 @@ updatePicture(id: number) {
 
 
   PostItem() {
-      this.startShowMessages();
+      
       if (this.item.valid &&this.picture()!=undefined && this.picture()>0) {
-        
-        this.store.dispatch(new PostItemAction({...this.item.value,picture:this.picture()}));
-        if (this.isSuccess()) {
+        this.startShowMessages();
+        this.store.dispatch(new PostItemAction({...this.item.value,picture:this.picture()})).subscribe(value=>{
+          console.log(value);
           this.isSubmit.set(false);
           this.close.emit();
-        }
+        });
+        
       }
       this.isSubmit.set(false);
-
   }
 
   isSubmit=signal(false);
