@@ -7,7 +7,7 @@ export const requestInterceptor: HttpInterceptorFn = (req, next) => {
   const store=inject(Store);
   const token=store.selectSignal(AuthState.getAccessToken);
   let reqWithHeader=null;
-  if (!req.url.includes("pictures") && !req.url.endsWith("items")) {
+  if (!req.url.includes("pictures") || (req.url.endsWith("items") && req.method==="GET")) {
     reqWithHeader = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token()}`),
     });

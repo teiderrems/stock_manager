@@ -102,7 +102,7 @@ updatePicture(id: number) {
   PostItem() {
       
       if (this.item.valid &&this.picture()!=undefined && this.picture()>0) {
-        this.startShowMessages();
+        // this.startShowMessages();
         this.store.dispatch(new PostItemAction({...this.item.value,picture:this.picture()})).subscribe(value=>{
           console.log(value);
           this.isSubmit.set(false);

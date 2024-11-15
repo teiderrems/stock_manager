@@ -11,5 +11,11 @@ namespace backend.Dto
         public double MinPrice { get; set; }
         public double Price { get; set; }
         public double MaxPrice { get; set; }
+
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
