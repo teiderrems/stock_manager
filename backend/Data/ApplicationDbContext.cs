@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<int>,int>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser,IdentityRole,string>(options)
     {
         public DbSet<Categorie> Categories { get; set; } = default!;
 

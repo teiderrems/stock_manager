@@ -23,8 +23,8 @@ namespace backend.Controllers
 
         // GET: api/Bills
         [HttpGet]
-        [Route("api/users/{owner:int}/bills")]
-        public async Task<ActionResult<KeysetPaginationResult<BillDto>>> GetBills(int owner)
+        [Route("api/users/{owner}/bills")]
+        public async Task<ActionResult<KeysetPaginationResult<BillDto>>> GetBills(string owner)
         {
             
             var pdfUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/users/{owner}/bills";
@@ -43,7 +43,7 @@ namespace backend.Controllers
         // GET: api/Bills/5
         [HttpGet("api/users/{owner:int}/bills/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetBill(int id,int owner)
+        public async Task<ActionResult> GetBill(int id,string owner)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id==owner);
 
@@ -61,7 +61,7 @@ namespace backend.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("api/users/{owner:int}/bills/{id}")]
         
-        public async Task<IActionResult> PutBill(int owner, int id, Bill bill)
+        public async Task<IActionResult> PutBill(string owner, int id, Bill bill)
         {
             
             if (id != bill.Id || bill.Owner.Id!=owner)
@@ -94,7 +94,7 @@ namespace backend.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("api/users/{ownerId:int}/bills")]
         
-        public async Task<ActionResult<Bill>> PostBill(int ownerId,Bill bill)
+        public async Task<ActionResult<Bill>> PostBill(string ownerId,Bill bill)
         {
             
             _context.Bills.Add(bill);
@@ -106,7 +106,7 @@ namespace backend.Controllers
         // DELETE: api/Bills/5
         [HttpDelete("api/users/{owner:int}/bills/{id}")]
         
-        public async Task<IActionResult> DeleteBill(int id,int owner)
+        public async Task<IActionResult> DeleteBill(int id,string owner)
         {
             var bill = await _context.Bills.Include(b => b.Owner).AsSplitQuery().FirstOrDefaultAsync(b => b.Id == id && b.Owner.Id == owner);
             if (bill == null)

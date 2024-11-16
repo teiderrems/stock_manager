@@ -1,10 +1,10 @@
 ﻿namespace backend.Dto
 {
-    public class UserDto(int id, string? username,
+    public class UserDto(string id, string? username,
         string? firstname, string? lastname, string? email, string? profile,
         DateTime? createdAt, DateTime? updatedAt, List<string>? roles, string? phoneNumber)
     {
-        public int Id { get; set; } = id;
+        public string Id { get; set; } = id;
 
         public string? Username { get; set; } = username;
 

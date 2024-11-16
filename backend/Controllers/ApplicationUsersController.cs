@@ -14,12 +14,9 @@ namespace backend.Controllers
     [Route("api/users")]
     [ApiController]
     [Authorize]
-    public class ApplicationUsersController(ApplicationDbContext context, IPaginationService paginationService, UserManager<ApplicationUser> _userManager,IEmailSender emailSender) : ControllerBase
+    public class ApplicationUsersController(ApplicationDbContext _context, IPaginationService _paginationService, UserManager<ApplicationUser> _userManager,IEmailSender _emailSender) : ControllerBase
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly IPaginationService _paginationService = paginationService;
-        private readonly UserManager<ApplicationUser> _userManager= _userManager;
-        private readonly IEmailSender _emailSender=emailSender;
+       
 
         // GET: api/ApplicationUsers
         [HttpGet]
@@ -53,7 +50,7 @@ namespace backend.Controllers
         // GET: api/ApplicationUsers/5
         [HttpGet("{id:int}")]
         // [AllowAnonymous]
-        public async Task<ActionResult<UserDto>> GetApplicationUser(int id)
+        public async Task<ActionResult<UserDto>> GetApplicationUser(string id)
         {
             var user = await _context.Users.Include(u=>u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().FirstOrDefaultAsync(u=>u.Id==id);
 
@@ -87,7 +84,7 @@ namespace backend.Controllers
         // PUT: api/ApplicationUsers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicationUser(int id, UpdateUserDto applicationUser)
+        public async Task<IActionResult> PutApplicationUser(string id, UpdateUserDto applicationUser)
         {
             if (id != applicationUser.Id)
             {
@@ -105,7 +102,7 @@ namespace backend.Controllers
             applicationUser.Roles!.ForEach(r=>{
 
                 if(!isIn(roles,r)){
-                    user.Roles!.Add(new IdentityRole<int>{
+                    user.Roles!.Add(new IdentityRole{
                         Name=r
                     });
                 }
@@ -152,7 +149,7 @@ namespace backend.Controllers
             
             var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
 
-            List<IdentityRole<int>> roles=[];
+            List<IdentityRole> roles=[];
             applicationUser.Roles!.ForEach(id=>{
                 roles.Add(_context.Roles.Find(id)!);
             });
@@ -200,7 +197,7 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        private bool ApplicationUserExists(int id)
+        private bool ApplicationUserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
         }
@@ -216,7 +213,7 @@ namespace backend.Controllers
             return "";
         }
 
-        private static List<string> GetRoles(List<IdentityRole<int>>? roles)
+        private static List<string> GetRoles(List<IdentityRole>? roles)
         {
             List<string> roleList = [];
             if(roles!=null && roles.Count>0){
