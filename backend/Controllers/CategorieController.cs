@@ -40,30 +40,35 @@ namespace backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddCategorie(CreateCategorieDto categorie)
+        public async Task<ActionResult<CustomResponseBody>> AddCategorie(CreateCategorieDto categorie)
         {
+            CustomResponseBody body;
             if (categorie==null)
             {
-                return NotFound(); 
+                body=new(false,[]);
+                return NotFound(body); 
             }
             try {
                 _context.Categories.Add(new Categorie() { Name=categorie.Name,Description=categorie.Description});
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCategorieById), new { categorie.Id }, categorie);
+                body=new(true,[]);
+                return Ok(body);
             }
             catch (Exception ex) { 
-                return BadRequest(ex);
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
             }
         }
 
         [HttpPut("{id:int}")]
         [Authorize]
-        public async Task<ActionResult<Categorie>> UpdateCategorie( int id,CategorieDto categorie)
+        public async Task<ActionResult<CustomResponseBody>> UpdateCategorie( int id,CategorieDto categorie)
         {
-            
+            CustomResponseBody body;
             if (categorie == null)
             {
-                return BadRequest();
+                body=new(false,[]);
+                return BadRequest(body);
             }
             
             try
@@ -72,39 +77,45 @@ namespace backend.Controllers
                 {
                     var result=_context.Categories.Update(new Categorie() { Name= categorie.Name!, Description=categorie.Description,Id= categorie.Id});
                     await _context.SaveChangesAsync();
-                    return Ok(result);
+                    body=new(true,[]);
+                    return Ok(body);
                 }
                 else
                 {
-                    return BadRequest();
+                    body=new(false,[]);
+                    return NotFound(body);
                 }
             }
             catch (Exception ex) {
-                return BadRequest(ex);
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
             }
         }
 
         [HttpDelete("{id:int}")]
         [Authorize]
-        public async Task<IActionResult> DeleteCategorie(int id)
+        public async Task<ActionResult<CustomResponseBody>> DeleteCategorie(int id)
         {
-            
+            CustomResponseBody body;
             try
             {
                 var cat = await _context.Categories.FindAsync(id);
                 if (cat==null)
                 {
                     _logger.LogWarning($" Categorie identified by id {id} don't exist in the Database");
-                    return BadRequest();
+                    body=new(false,[]);
+                    return BadRequest(body);
                 }
                 var result = _context.Categories.Remove(cat);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Categorie Deleted successfully");
-                return Ok(result);
+                body=new(true,[]);
+                return Ok(body);
             }
             catch (Exception ex) {
                 _logger.LogError(ex.Message);
-                return NotFound(ex);
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
             }
         }
     }

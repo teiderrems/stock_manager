@@ -7,7 +7,6 @@ using MR.AspNetCore.Pagination;
 using backend.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Elfie.Extensions;
 
 namespace backend.Controllers
 {
@@ -25,46 +24,53 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<KeysetPaginationResult<UserDto>>> GetUsers()
         {
-            IQueryable<ApplicationUser>? Users = null;
-            var role = HttpContext.Request.Query["role"].ToString();
-            if (role.Length==0)
+            try
             {
-                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery();
+                IQueryable<ApplicationUser>? Users = null;
+                var role = HttpContext.Request.Query["role"].ToString();
+                if (role.Length==0)
+                {
+                    Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery();
+                }
+                else
+                {
+                    Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().Where(u => u.Roles!.Contains(_context.Roles.FirstOrDefault(r=>r.Name==role)!)).AsSplitQuery();
+                }
+
+                var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)
+                var usersPaginationResult = await _paginationService.KeysetPaginateAsync(
+                    Users,
+                    _usersKeysetQuery,
+                    async id => await _context.Users.FindAsync(int.Parse(id)),
+                    query => query.Select((item) => new UserDto(item.Id, item.UserName, item.Firstname, item.Lastname,
+                                                                item.Email, GetPictureUrl(item.Profil!, HttpContext),
+                                                                item.CreatedAt, item.UpdatedAt, GetRoles(item.Roles!),
+                                                                item.PhoneNumber))
+                    );
+
+                return usersPaginationResult;
             }
-            else
+            catch (System.Exception ex)
             {
-                Users = _context.Users.Include(u => u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().Where(u => u.Roles!.Contains(_context.Roles.FirstOrDefault(r=>r.Name==role)!)).AsSplitQuery();
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
-
-            var _usersKeysetQuery = KeysetQuery.Build<ApplicationUser>(b => b.Descending(x => x.Email!));//.Descending(x => x.Id)
-            var usersPaginationResult = await _paginationService.KeysetPaginateAsync(
-                Users,
-                _usersKeysetQuery,
-                async id => await _context.Users.FindAsync(int.Parse(id)),
-                query => query.Select((item) => new UserDto(item.Id, item.UserName, item.Firstname, item.Lastname,
-                                                            item.Email, GetPictureUrl(item.Profil!, HttpContext),
-                                                            item.CreatedAt, item.UpdatedAt, GetRoles(item.Roles!),
-                                                            item.PhoneNumber))
-                );
-
-            return usersPaginationResult;
         }
 
         // GET: api/ApplicationUsers/5
         [HttpGet("{id:int}")]
         // [AllowAnonymous]
-        public async Task<ActionResult<UserDto>> GetApplicationUser(int id)
+        public async Task<ActionResult<UserDto>> GetApplicationUser(string id)
         {
             var user = await _context.Users.Include(u=>u.Profil).AsSplitQuery().Include(u => u.Roles).AsSplitQuery().FirstOrDefaultAsync(u=>u.Id==id);
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new CustomResponseBody(false,[]));
             }
 
-            return new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
+            return Ok(new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
                                GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
-                               GetRoles(user.Roles!), user.PhoneNumber);
+                               GetRoles(user.Roles!), user.PhoneNumber));
         }
 
         // GET: api/ApplicationUsers/remi
@@ -87,57 +93,59 @@ namespace backend.Controllers
         // PUT: api/ApplicationUsers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicationUser(int id, UpdateUserDto applicationUser)
+        public async Task<ActionResult<CustomResponseBody>> PutApplicationUser(string id, UpdateUserDto applicationUser)
         {
+            CustomResponseBody body;
             if (id != applicationUser.Id)
             {
-                return BadRequest();
-            } 
-
-            var user=await _context.Users.FindAsync(id);
-            if (user!.Profil!.Id!=applicationUser.PictureId)
-            {
-                var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
-                user.Profil=picture;
+                body=new(false,[]);
+                return BadRequest(body);
             }
-
-            var roles=GetRoles(user.Roles);
-            applicationUser.Roles!.ForEach(r=>{
-
-                if(!isIn(roles,r)){
-                    user.Roles!.Add(new IdentityRole<int>{
-                        Name=r
-                    });
-                }
-
-            });
-
-            user.UserName=user.UserName!=applicationUser.Username?applicationUser.Username:user.UserName;
-            user.Firstname=user.Firstname!=applicationUser.Firstname?applicationUser.Firstname:user.Firstname;
-            user.Lastname=user.Lastname!=applicationUser.Lastname?applicationUser.Lastname:user.Lastname;
-            user.Email=user.Email!=applicationUser.Email?applicationUser.Email:user.Email;
-            user.PhoneNumber=user.PhoneNumber!=applicationUser.PhoneNumber?applicationUser.PhoneNumber:user.PhoneNumber;
-            user.UpdatedAt=DateTime.Now;
-
-            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
+                var user=await _context.Users.FindAsync(id);
+                if (user!.Profil!.Id!=applicationUser.PictureId)
+                {
+                    var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
+                    user.Profil=picture;
+                }
+
+                var roles=GetRoles(user.Roles);
+                applicationUser.Roles!.ForEach(r=>{
+
+                    if(!isIn(roles,r)){
+                        user.Roles!.Add(new IdentityRole{
+                            Name=r
+                        });
+                    }
+
+                });
+                user.UserName=user.UserName!=applicationUser.Username?applicationUser.Username:user.UserName;
+                user.Firstname=user.Firstname!=applicationUser.Firstname?applicationUser.Firstname:user.Firstname;
+                user.Lastname=user.Lastname!=applicationUser.Lastname?applicationUser.Lastname:user.Lastname;
+                user.Email=user.Email!=applicationUser.Email?applicationUser.Email:user.Email;
+                user.PhoneNumber=user.PhoneNumber!=applicationUser.PhoneNumber?applicationUser.PhoneNumber:user.PhoneNumber;
+                user.UpdatedAt=DateTime.Now;
+
+                _context.Entry(user).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                body=new(true,[]);
+                return Ok(body);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
+                body=new(false,[ex.Message]);
                 if (!ApplicationUserExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new CustomResponseBody(false,[]));
                 }
                 else
                 {
-                    throw;
+                    BadRequest(body);
                 }
             }
-
-            return NoContent();
+            return Ok(new CustomResponseBody(true,[]));
         }
 
 
@@ -149,58 +157,71 @@ namespace backend.Controllers
         //[AllowAnonymous]
         public async Task<ActionResult<UserDto>> PostApplicationUser(CreateUserDto applicationUser)
         {
+            CustomResponseBody body;
             
-            var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
-
-            List<IdentityRole<int>> roles=[];
-            applicationUser.Roles!.ForEach(id=>{
-                roles.Add(_context.Roles.Find(id)!);
-            });
-
-            var user = new ApplicationUser
+            try
             {
-                Roles = roles,
-                UserName = applicationUser.Email,
-                Firstname = applicationUser.Firstname,
-                Lastname = applicationUser.Lastname,
-                Email = applicationUser.Email,
-                PhoneNumber = applicationUser.PhoneNumber,
-                Profil = picture,
-                NormalizedEmail = applicationUser.Email!.ToUpper(),
-                NormalizedUserName = applicationUser.Email!.ToUpper(),
-                EmailConfirmed = true
-            };
+                var picture = await _context.Images.FirstOrDefaultAsync(p => p.Id == applicationUser.PictureId);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-             var currentUser=await _userManager.AddPasswordAsync(user, "Toto1234;");
+                List<IdentityRole> roles=[];
+                applicationUser.Roles!.ForEach(id=>{
+                    roles.Add(_context.Roles.Find(id)!);
+                });
 
-            var message = new Message([applicationUser.Email], "Confirm your email", $"Please use these informations email={applicationUser.Email} and password=<h2>Toto1234;</h2> for your first login", null);
+                var user = new ApplicationUser
+                {
+                    Roles = roles,
+                    UserName = applicationUser.Email,
+                    Firstname = applicationUser.Firstname,
+                    Lastname = applicationUser.Lastname,
+                    Email = applicationUser.Email,
+                    PhoneNumber = applicationUser.PhoneNumber,
+                    Profil = picture,
+                    NormalizedEmail = applicationUser.Email!.ToUpper(),
+                    NormalizedUserName = applicationUser.Email!.ToUpper(),
+                    EmailConfirmed = true
+                };
 
-            await _emailSender.SendEmailAsync(message);
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                var currentUser=await _userManager.AddPasswordAsync(user, "Toto1234;");
 
-            return CreatedAtAction("GetApplicationUser", new { id = user.Id }, new UserDto(user.Id, user.UserName, user.Firstname, user.Lastname, user.Email,
-                             GetPictureUrl(user.Profil!, HttpContext), user.CreatedAt, user.UpdatedAt,
-                             GetRoles(user.Roles), user.PhoneNumber));
+                var message = new Message([applicationUser.Email], "Confirm your email", $"Please use these informations email={applicationUser.Email} and password=<h2>Toto1234;</h2> for your first login", null);
+
+                await _emailSender.SendEmailAsync(message);
+                body=new(true,[]);
+                return Ok(body);
+            }
+            catch (System.Exception ex)
+            {
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
+            }
         }
 
         // DELETE: api/ApplicationUsers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteApplicationUser(int id)
+        public async Task<ActionResult<CustomResponseBody>> DeleteApplicationUser(string id)
         {
             var applicationUser = await _context.Users.FindAsync(id);
             if (applicationUser == null)
             {
-                return NotFound();
+                return NotFound(new CustomResponseBody(false,[]));
             }
 
-            _context.Users.Remove(applicationUser);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            try
+            {
+                _context.Users.Remove(applicationUser);
+                await _context.SaveChangesAsync();
+                return Ok(new CustomResponseBody(true,[]));
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
+            }
         }
 
-        private bool ApplicationUserExists(int id)
+        private bool ApplicationUserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
         }
@@ -216,7 +237,7 @@ namespace backend.Controllers
             return "";
         }
 
-        private static List<string> GetRoles(List<IdentityRole<int>>? roles)
+        private static List<string> GetRoles(List<IdentityRole>? roles)
         {
             List<string> roleList = [];
             if(roles!=null && roles.Count>0){

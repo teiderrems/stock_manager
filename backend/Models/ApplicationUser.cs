@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace backend.Models
 {
-    public class ApplicationUser:IdentityUser<int>
+    public class ApplicationUser:IdentityUser
     {
         public string? Firstname {  get; set; }
         public string? Lastname { get; set; }
@@ -16,6 +16,6 @@ namespace backend.Models
 
         public Picture? Profil { get; set; }
 
-        public List<IdentityRole<int>>? Roles { get; set; }
+        public List<IdentityRole>? Roles { get; set; }
     }
 }

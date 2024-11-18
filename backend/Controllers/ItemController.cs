@@ -49,11 +49,11 @@ namespace backend.Controllers
             var minPrice=HttpContext.Request.Query["minPrice"].ToString();
             var maxPrice = HttpContext.Request.Query["maxPrice"].ToString();
 
-            if (minPrice.Length > 0 && double.Parse(minPrice) is double)
+            if (minPrice.Length > 0)
             {
                 Items = Items.Where(item => item.MinPrice <= double.Parse(minPrice));
             }
-            if (maxPrice.Length>0 && double.Parse(maxPrice) is double)
+            if (maxPrice.Length>0)
             {
                 Items = Items.Where(item => item.MaxPrice <= double.Parse(maxPrice));
             }
@@ -103,43 +103,43 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddItem(CreateItemDto item)
+        public async Task<ActionResult<CustomResponseBody>> AddItem(CreateItemDto item)
         {
             
             if (item == null)
             {
-                return NotFound();
+                return NotFound(new CustomResponseBody(false,[]));
             }
-            List<Categorie> categories = [];
-
-            item.Categories!.ForEach(c =>
-            {
-                categories.Add(_context.Categories.Find(c)!);
-            });
-
-            var newItem = new Item
-            {
-                Name = item.Name,
-                Image = await _context.Images.FindAsync(item.Picture),
-                Categories = categories,
-                Comments = [],
-                Description = item.Description,
-                ExpirationAt = item.ExpirationAt,
-                StockQuantity = item.StockQuantity,
-                MinPrice = item.MinPrice,
-                Price = 0.0,
-                MaxPrice = item.MaxPrice
-            };
 
             try
             {
+                List<Categorie> categories = [];
+
+                item.Categories!.ForEach(c =>
+                {
+                    categories.Add(_context.Categories.Find(c)!);
+                });
+
+                var newItem = new Item
+                {
+                    Name = item.Name,
+                    Image = await _context.Images.FindAsync(item.Picture),
+                    Categories = categories,
+                    Comments = [],
+                    Description = item.Description,
+                    ExpirationAt = item.ExpirationAt,
+                    StockQuantity = item.StockQuantity,
+                    MinPrice = item.MinPrice,
+                    Price = 0.0,
+                    MaxPrice = item.MaxPrice
+                };
                 _context.Items.Add(newItem);
                 await _context.SaveChangesAsync();
-                return Ok();
+                return Ok(new CustomResponseBody(true,[]));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
 
@@ -150,7 +150,7 @@ namespace backend.Controllers
             
             if (item == null)
             {
-                return BadRequest();
+                return BadRequest(new CustomResponseBody(false,[]));
             }
 
             try
@@ -167,22 +167,22 @@ namespace backend.Controllers
 
                     var result = _context.Items.Update(oldItem);
                     await _context.SaveChangesAsync();
-                    return Ok();
+                    return Ok(new CustomResponseBody(true,[]));
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(new CustomResponseBody(false,[]));
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
 
         [HttpDelete("{id:int}")]
 
-        public async Task<IActionResult> DeleteItem(int id)
+        public async Task<ActionResult<CustomResponseBody>> DeleteItem(int id)
         {
             try
             {
@@ -195,12 +195,12 @@ namespace backend.Controllers
                 var result = _context.Items.Remove(item);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation(result.ToString());
-                return Ok(result);
+                return Ok(new CustomResponseBody(true,[]));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return NotFound(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
     }

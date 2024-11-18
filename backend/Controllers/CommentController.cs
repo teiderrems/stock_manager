@@ -20,19 +20,27 @@ namespace backend.Controllers
 
         [HttpGet("{itemId:int}/comments",Name = "List Comment")]
         [AllowAnonymous]
-        public async Task<KeysetPaginationResult<CommentDto>> GetAllComment(int itemId)
+        public async Task<ActionResult<KeysetPaginationResult<CommentDto>>> GetAllComment(int itemId)
         {
             _logger.LogInformation("Comment List");
 
-            var commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
-            var commentsPaginationResult = await _paginationService.KeysetPaginateAsync(
-                _context.Comments.Where(c=>c.Item.Id==itemId).Include(c=>c.Owner).AsSingleQuery(),
-                commentsKeysetQuery,
-                async id => await _context.Comments.FindAsync(int.Parse(id)),
-                query => query.Select((item) => new CommentDto(item))
-                );
+            try
+            {
+                var commentsKeysetQuery = KeysetQuery.Build<Comment>(b => b.Descending(x => x.Title));//.Descending(x => x.Id)
+                var commentsPaginationResult = await _paginationService.KeysetPaginateAsync(
+                    _context.Comments.Where(c=>c.Item.Id==itemId).Include(c=>c.Owner).AsSingleQuery(),
+                    commentsKeysetQuery,
+                    async id => await _context.Comments.FindAsync(int.Parse(id)),
+                    query => query.Select((item) => new CommentDto(item))
+                    );
 
-            return commentsPaginationResult;
+                return commentsPaginationResult;
+            }
+            catch (System.Exception ex)
+            {
+                
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
+            }
         }
 
         [HttpGet("{itemId:int}/comments/{id:int}")]
@@ -47,16 +55,16 @@ namespace backend.Controllers
             catch (Exception ex)
             {
 
-                return NotFound(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
 
         [HttpPost("{itemId:int}/comments")]
-        public async Task<ActionResult> AddComment(int itemId,CreateCommentDto? comment)
+        public async Task<ActionResult<CustomResponseBody>> AddComment(int itemId,CreateCommentDto? comment)
         {
             if (comment==null)
             {
-                return NotFound(); 
+                return NotFound(new CustomResponseBody(false,[])); 
             }
             try {
                 var currentComment = new Comment
@@ -69,19 +77,19 @@ namespace backend.Controllers
 
                 _context.Comments.Add(currentComment);
                 await _context.SaveChangesAsync();
-                return Ok(true);
+                return Ok(new CustomResponseBody(true,[]));
             }
             catch (Exception ex) { 
-                return BadRequest(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
 
         [HttpPut("{itemId:int}/comments/{id:int}")]
-        public async Task<ActionResult<Comment>> UpdateComment(int itemId, int id,Comment? comment)
+        public async Task<ActionResult<CustomResponseBody>> UpdateComment(int itemId, int id,Comment? comment)
         {
             if (comment == null)
             {
-                return BadRequest();
+                return BadRequest(new CustomResponseBody(false,[]));
             }
             
             try
@@ -90,20 +98,20 @@ namespace backend.Controllers
                 {
                     var result=_context.Comments.Update(comment);
                     await _context.SaveChangesAsync();
-                    return Ok(result);
+                    return Ok(new CustomResponseBody(true,[]));
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(new CustomResponseBody(false,[]));
                 }
             }
             catch (Exception ex) {
-                return BadRequest(ex);
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
 
         [HttpDelete("{itemId:int}/comments/{id:int}")]
-        public async Task<IActionResult> DeleteComment(int itemId,int id)
+        public async Task<ActionResult<CustomResponseBody>> DeleteComment(int itemId,int id)
         {
             try
             {
@@ -116,11 +124,11 @@ namespace backend.Controllers
                 var result = _context.Comments.Remove(comment);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation(result.ToString());
-                return Ok(result);
+                return Ok(new CustomResponseBody(true,[]));
             }
             catch (Exception ex) {
                 _logger.LogError(ex.Message);
-                return NotFound(ex);
+                return NotFound(new CustomResponseBody(false,[ex.Message]));
             }
         }
     }

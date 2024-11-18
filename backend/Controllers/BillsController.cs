@@ -23,8 +23,8 @@ namespace backend.Controllers
 
         // GET: api/Bills
         [HttpGet]
-        [Route("api/users/{owner:int}/bills")]
-        public async Task<ActionResult<KeysetPaginationResult<BillDto>>> GetBills(int owner)
+        [Route("api/users/{owner}/bills")]
+        public async Task<ActionResult<KeysetPaginationResult<BillDto>>> GetBills(string owner)
         {
             
             var pdfUrl = $"{HttpContext.Request.Protocol.Split('/')[0]}://{HttpContext.Request.Host}/api/users/{owner}/bills";
@@ -41,9 +41,9 @@ namespace backend.Controllers
         }
 
         // GET: api/Bills/5
-        [HttpGet("api/users/{owner:int}/bills/{id}")]
+        [HttpGet("api/users/{owner}/bills/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetBill(int id,int owner)
+        public async Task<ActionResult> GetBill(int id,string owner)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id==owner);
 
@@ -59,14 +59,16 @@ namespace backend.Controllers
 
         // PUT: api/Bills/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("api/users/{owner:int}/bills/{id}")]
+        [HttpPut("api/users/{owner}/bills/{id}")]
         
-        public async Task<IActionResult> PutBill(int owner, int id, Bill bill)
+        public async Task<ActionResult<CustomResponseBody>> PutBill(string owner, int id, Bill bill)
         {
             
+            CustomResponseBody body;
             if (id != bill.Id || bill.Owner.Id!=owner)
             {
-                return BadRequest();
+                body=new(false,[]);
+                return BadRequest(body);
             }
 
             _context.Entry(bill).State = EntityState.Modified;
@@ -74,50 +76,69 @@ namespace backend.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                body=new(true,[]);
+                return Ok(body);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                if (!BillExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
             }
-
-            return NoContent();
         }
 
         // POST: api/Bills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("api/users/{ownerId:int}/bills")]
+        [HttpPost("api/users/{ownerId}/bills")]
         
-        public async Task<ActionResult<Bill>> PostBill(int ownerId,Bill bill)
+        public async Task<ActionResult<CustomResponseBody>> PostBill(string ownerId,Bill bill)
         {
-            
-            _context.Bills.Add(bill);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBill", new { owner=ownerId,id = bill.Id }, bill);
+            CustomResponseBody body;
+            if (bill==null)
+            {
+                body=new(false,[]);
+                return BadRequest(body);
+            }
+            try
+            {
+                bill.Owner=_context.Users.Find(ownerId)!;
+                _context.Bills.Add(bill);
+                await _context.SaveChangesAsync();
+                body=new(true,[]);
+                return Ok(body);
+            }
+            catch (System.Exception ex)
+            {
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
+            }
         }
 
         // DELETE: api/Bills/5
-        [HttpDelete("api/users/{owner:int}/bills/{id}")]
+        [HttpDelete("api/users/{owner}/bills/{id}")]
         
-        public async Task<IActionResult> DeleteBill(int id,int owner)
+        public async Task<ActionResult<CustomResponseBody>> DeleteBill(int id,string owner)
         {
-            var bill = await _context.Bills.Include(b => b.Owner).AsSplitQuery().FirstOrDefaultAsync(b => b.Id == id && b.Owner.Id == owner);
+            CustomResponseBody body;
+            var bill = _context.Bills.Include(b => b.Owner).AsSplitQuery().FirstOrDefault(b => b.Id == id && b.Owner.Id == owner);
             if (bill == null)
             {
-                return NotFound();
+                body=new(false,[]);
+                return NotFound(body);
             }
 
-            _context.Bills.Remove(bill);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            try
+            {
+                _context.Bills.Remove(bill);
+                await _context.SaveChangesAsync();
+                body=new(false,[]);
+                return Ok(body);
+            }
+            catch (System.Exception ex)
+            {
+                
+                body=new(false,[ex.Message]);
+                return BadRequest(body);
+            }
         }
 
         private bool BillExists(int id)

@@ -11,7 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/roles")]
     [ApiController]
-    public class UserRolesController(ApplicationDbContext context) : ControllerBase
+    public class UserRolesController(ApplicationDbContext context,RoleManager<IdentityRole> roleManager) : ControllerBase
     {
 
 
@@ -24,38 +24,55 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerator<RoleDto>>> GetAllRole()
         {   
-            var roles=await _context.Roles.Select(r=>new RoleDto(r)).ToListAsync();
+            var roles=await roleManager.Roles.Select(r=>new RoleDto(r)).ToListAsync();
             return Ok(roles);
         }
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IdentityRole<int>>> GetRoleById(int id)
+        public async Task<ActionResult<IdentityRole>> GetRoleById(string id)
         {
-            var role=await _context.Roles.FindAsync(id);
+            // var role=await _context.Roles.FindAsync(id);
+            var role=await roleManager.FindByIdAsync(id);
             if (role == null) { 
-                return NotFound();
+                return NotFound(new CustomResponseBody(false,[]));
             }
             return Ok(new RoleDto(role));
         }
 
         // POST api/<ValuesController>
         [HttpPost]
-        public async Task<ActionResult<RoleDto>> Post(IdentityRole<int> role)
+        public async Task<ActionResult> Post(IdentityRole role)
         {
             var temp=_context.Roles.FirstOrDefault(r=>r.Name==role.Name);
             if (temp!=null)
             {
-                return CreatedAtAction(nameof(GetRoleById), new { id=temp.Id }, new RoleDto(temp));
+                return Ok(new CustomResponseBody(true,[]));
             }
-            _context.Roles.Add(role);
             try
             {
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetRoleById), new { id=role.Id }, new RoleDto(role));
+                return Ok(await roleManager.CreateAsync(role));
             }
             catch (Exception ex) { 
-                return BadRequest(ex.Message);
+                return BadRequest(new CustomResponseBody(true,[ex.Message]));
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id){
+            try
+            {
+                var role=await roleManager.FindByIdAsync(id);
+                if (role!=null)
+                {
+                    return Ok(await roleManager.DeleteAsync(role));
+                }
+                return NotFound(new CustomResponseBody(false,[]));
+            }
+            catch (System.Exception ex)
+            {
+                
+                return BadRequest(new CustomResponseBody(false,[ex.Message]));
             }
         }
     }

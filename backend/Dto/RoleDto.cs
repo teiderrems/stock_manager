@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace backend.Dto
 {
-    public class RoleDto(IdentityRole<int> role)
+    public class RoleDto(IdentityRole role)
     {
-        public int Id { get; set; } = role.Id;
+        public string? Id { get; set; } = role.Id;
         public string? Name { get; set; } = role.Name;
         public string? Description { get; set; }
     }
