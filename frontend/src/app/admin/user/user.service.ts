@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConstantService } from '../../constant.service';
 import { HttpClient } from '@angular/common/http';
-import { CreateUser, UpdateUser, User, UserResponseBody } from '../../../interfaces';
+import { CreateUser, ResponseBody, UpdateUser, User, UserResponseBody } from '../../../interfaces';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -20,18 +20,18 @@ export class UserService {
     return this.http.get<User>(this.constantService.getBaseUrl()+`users/${id}`)
   }
 
-  addUser(user:CreateUser):Observable<any>{
-    console.log(user);
-    return this.http.post(this.constantService.getBaseUrl()+'users',user);
+  addUser(user:CreateUser):Observable<ResponseBody>{
+    
+    return this.http.post<ResponseBody>(this.constantService.getBaseUrl()+'users',user);
   }
 
-  updateUser(id:number,user:UpdateUser):Observable<any>{
+  updateUser(id:number,user:UpdateUser):Observable<ResponseBody>{
 
-    return this.http.put(this.constantService.getBaseUrl()+`users/${id}`,user);
+    return this.http.put<ResponseBody>(this.constantService.getBaseUrl()+`users/${id}`,user);
   }
 
-  deleteUser(id:number):Observable<any>{
-    return this.http.delete(this.constantService.getBaseUrl()+`users/${id}`);
+  deleteUser(id:number):Observable<ResponseBody>{
+    return this.http.delete<ResponseBody>(this.constantService.getBaseUrl()+`users/${id}`);
   }
 
   getUserByUsername(username:string):Observable<User>{

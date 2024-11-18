@@ -5,10 +5,8 @@
     </a>
     <a routerLink="/items"  class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="appstore" nzTheme="outline"></span><span>Items</span></a>
     @if (isAdmin()) {
-        <nz-tree [nzData]="nodes" (nzClick)="handleClic($event)" nzShowIcon nzBlockNode  [nzBeforeDrop]="beforeDrop"></nz-tree>
-        <!-- <a routerLink="/admin/users" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="user" nzTheme="outline"></span><span>Users</span></a>
+        <a routerLink="/admin/users" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="team" nzTheme="outline"></span><span>Users</span></a>
         <a routerLink="/admin/users/admin" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="user" nzTheme="outline"></span><span>Admin</span></a>
         <a routerLink="/admin/users/guest" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="user" nzTheme="outline"></span><span>Guest</span></a>
-        <a routerLink="/admin/users/user" class="flex space-x-2 items-center leading-5" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]={exact:true}><span nz-icon nzType="user" nzTheme="outline"></span><span>User</span></a> -->
     }
 </nav>

@@ -1,4 +1,3 @@
-
  <ng-template #coverTemplate>
   <img alt="example" nz-image [nzSrc]="currentItem()?.imageUrl!"/>
 </ng-template>
@@ -11,7 +10,6 @@
   
   <button nz-button class="text-3xl" [nzType]="'text'" ><span nz-icon  nzType="edit" nzTheme="outline"></span></button>
 </ng-template>
-
 <ng-template #tag>
   <h1 class=" font-thin p-1">{{currentItem()?.name}}</h1>
   <div class="flex justify-between">
@@ -30,18 +28,18 @@
 </ng-template>
 
 <ng-template #container>
-  <div class=" w-full h-full">
+  <!-- <div class=" w-full h-full"> -->
     @if (!!currentItem()?.imageUrl) {
 
-      <img alt="example" [src]="currentItem()?.imageUrl"/>
+      <img alt="example" class="h-full w-full rounded-t-md" [src]="currentItem()?.imageUrl"/>
     }
     @else {
       <div class="w-full h-full bg-slate-500 rounded-t-md"></div>
     }
-  </div>
+  <!-- </div> -->
 </ng-template>
 
-<div  class=" rounded-md border hover:cursor-pointer hover:shadow-md sm:w-80 w-60 flex flex-col space-y-2 h-80">
+<div  class=" rounded-md border hover:cursor-pointer hover:shadow-md sm:w-40 md:w-48 w-30 flex flex-col space-y-2 h-60">
   <div class=" w-full h-4/6" *ngTemplateOutlet="container">
 
   </div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConstantService } from '../constant.service';
-import { Categorie, CreateCategorie } from '../../interfaces';
+import { Categorie, CreateCategorie, ResponseBody } from '../../interfaces';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -22,18 +22,18 @@ export class CategorieService {
     return this.http.get<Categorie>(this.constantService.getBaseUrl()+`categories/${id}`)
   }
 
-  addCategorie(categorie:CreateCategorie):Observable<any>{
+  addCategorie(categorie:CreateCategorie):Observable<ResponseBody>{
 
-    return this.http.post(this.constantService.getBaseUrl()+`categories`,categorie);
+    return this.http.post<ResponseBody>(this.constantService.getBaseUrl()+`categories`,categorie);
   }
 
-  updateCategorie(id:number,categorie:Partial<Categorie>):Observable<any>{
+  updateCategorie(id:number,categorie:Partial<Categorie>):Observable<ResponseBody>{
     
-    return this.http.put(this.constantService.getBaseUrl()+`categories/${id}`,categorie);
+    return this.http.put<ResponseBody>(this.constantService.getBaseUrl()+`categories/${id}`,categorie);
   }
 
-  deleteCategorie(id:number):Observable<any>{
+  deleteCategorie(id:number):Observable<ResponseBody>{
     
-    return this.http.delete(this.constantService.getBaseUrl()+`categories/${id}`);
+    return this.http.delete<ResponseBody>(this.constantService.getBaseUrl()+`categories/${id}`);
   }
 }

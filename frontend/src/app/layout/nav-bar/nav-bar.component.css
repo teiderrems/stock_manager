@@ -9,3 +9,7 @@ nav>a{
 .active{
     @apply font-bold text-3xl
 }
+
+nz-tree{
+    @apply bg-gray-950 opacity-20 text-white
+}

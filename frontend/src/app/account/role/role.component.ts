@@ -5,7 +5,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { PostRoleAction, ResetBooleanField } from '../../../state/role/role.actions';
 import { RoleState } from '../../../state/role/role.state';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-role',
@@ -32,8 +32,11 @@ export class RoleComponent {
     if (this.role.valid) {
       
       this.store.dispatch(ResetBooleanField);
-      this.store.dispatch(new PostRoleAction(this.role.getRawValue() as {name:string}));
-      if (this.isSuccess()) {
+      this.store.dispatch(new PostRoleAction(this.role.getRawValue() as {name:string}))
+      .pipe(
+        tap(value=>value)
+      ).subscribe(value=>console.log(value));
+      if (this.state().isSuccess) {
         this.isSubmit.set(false);
         this.close.emit();
         this.store.dispatch(ResetBooleanField);

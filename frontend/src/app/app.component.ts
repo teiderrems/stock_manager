@@ -1,5 +1,4 @@
 import {
-  afterRender,
   Component,
   inject,
   OnInit,
@@ -8,18 +7,13 @@ import {
 import { Title } from '@angular/platform-browser';
 import {
   Router,
-  RouterLink,
-  RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { HeaderComponent } from './layout/header/header.component';
-import { FooterComponent } from './layout/footer/footer.component';
 import { NavBarComponent } from './layout/nav-bar/nav-bar.component';
 import { LogoComponent } from './layout/logo/logo.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { CapitalizePipe } from './capitalize.pipe';
 import { ProfileComponent } from './account/profile/profile.component';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -31,17 +25,12 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [
     RouterOutlet,
-    HeaderComponent,
     NzIconModule,
-    FooterComponent,
     NavBarComponent,
     NzDrawerModule,
-    RouterLink,
-    RouterLinkActive,
     LogoComponent,
     NzLayoutModule,
     NzBreadCrumbModule,
-    CapitalizePipe,
     ProfileComponent,
     NzButtonModule,
     NzSwitchModule,
@@ -73,17 +62,5 @@ export class AppComponent implements OnInit {
   title = signal<string>('frontend');
 
   constructor(){
-    // afterRender({
-    //   write:()=>{
-    //     // this.titleService.setTitle('App component');
-    //     // if (this.isAuthenticate()) {
-    //     //   this.viewRef.createEmbeddedView(this.profile)
-    //     // }
-    //     // else{
-    //     //   this.viewRef.createEmbeddedView(this.navbar)
-    //     // }
-    //     console.log(this.store);
-    //   }
-    // })
   }
 }

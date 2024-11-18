@@ -71,7 +71,6 @@ export class UserState {
     return this.userService.getAllUser(page,limit,role).pipe(
       mergeMap(users=>ctx.dispatch([new LoadSuccessAction(users),UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
       catchError((error:HttpErrorResponse)=>{
-        console.log(error);
         return ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction])
       })
     );
@@ -90,7 +89,7 @@ export class UserState {
   addNewUser(ctx:StateContext<UserStateModel>,{user}:PostUserAction){
     ctx.patchState({isFetch:true});
     return this.userService.addUser(user).pipe(
-      mergeMap(()=>ctx.dispatch([LoadUserAction,UpdateSuccessAction,UpdateLoadingAction,UpdateIsFetchAction])),
+      mergeMap(()=>ctx.dispatch([UpdateLoadingAction,UpdateSuccessAction,LoadUserAction,UpdateIsFetchAction])),
       catchError((error:HttpErrorResponse)=>ctx.dispatch([UpdateIsErrorAction,UpdateLoadingAction,new ActionOnUserFailled(error.message,error.status),UpdateIsFetchAction]))
     );
   }

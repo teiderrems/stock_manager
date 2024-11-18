@@ -11,6 +11,11 @@ export interface CreateCategorie{
     description?:string | null;
 }
 
+export interface ResponseBody{
+    succeeded:boolean;
+    error:string[];
+}
+
 
 export interface Role{
     id?:number;

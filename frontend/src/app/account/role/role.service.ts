@@ -19,13 +19,25 @@ export class RoleService {
     return this.http.get<Role>(this.constantService.getBaseUrl()+`roles/${id}`)
   }
 
-  addRole(role:{name:string}):Observable<any>{
+  addRole(role:{name:string}):Observable<{
+    succeeded:boolean,
+    error:any[]
+  }>{
     
-    return this.http.post(this.constantService.getBaseUrl()+'roles',role);
+    return this.http.post<{
+      succeeded:boolean,
+      error:any[]
+    }>(this.constantService.getBaseUrl()+'roles',role);
   }
 
 
-  deleteRole(id:number):Observable<any>{
-    return this.http.delete(this.constantService.getBaseUrl()+`roles/${id}`);
+  deleteRole(id:number):Observable<{
+    succeeded:boolean,
+    error:any[]
+  }>{
+    return this.http.delete<{
+      succeeded:boolean,
+      error:any[]
+    }>(this.constantService.getBaseUrl()+`roles/${id}`);
   }
 }

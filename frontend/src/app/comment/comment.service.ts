@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CommentResponseBody, CreateComment } from '../../interfaces';
+import { CommentResponseBody, CreateComment, ResponseBody } from '../../interfaces';
 import { Observable } from 'rxjs';
 import { ConstantService } from '../constant.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,16 +19,16 @@ export class CommentService {
     return this.http.get<Comment>(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`)
   }
 
-  addComment(comment:CreateComment,itemId:number):Observable<any>{
-    return this.http.post(this.constantService.getBaseUrl()+`items/${itemId}/comments`,comment);
+  addComment(comment:CreateComment,itemId:number):Observable<ResponseBody>{
+    return this.http.post<ResponseBody>(this.constantService.getBaseUrl()+`items/${itemId}/comments`,comment);
   }
 
-  updateComment(id:number,itemId:number,comment:Comment):Observable<any>{
+  updateComment(id:number,itemId:number,comment:Comment):Observable<ResponseBody>{
 
-    return this.http.put(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`,comment);
+    return this.http.put<ResponseBody>(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`,comment);
   }
 
-  deleteComment(id:number,itemId:number):Observable<any>{
-    return this.http.delete(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`);
+  deleteComment(id:number,itemId:number):Observable<ResponseBody>{
+    return this.http.delete<ResponseBody>(this.constantService.getBaseUrl()+`items/${itemId}/comments/${id}`);
   }
 }

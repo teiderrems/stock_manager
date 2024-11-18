@@ -13,7 +13,6 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AuthState } from '../../../../../state/auth/auth.state';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -28,7 +27,7 @@ import { LoadRoleAction } from '../../../../../state/role/role.actions';
 import { PostUserAction, ResetBooleanField } from '../../../../../state/user/user.actions';
 import { UserState } from '../../../../../state/user/user.state';
 import { PictureService } from '../../../../picture/picture.service';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-user',
@@ -53,9 +52,9 @@ export class AddUserComponent implements OnInit {
   }
 
   private store = inject(Store);
-  private router = inject(Router);
-  private picture = signal(0);
+  private picture = signal(1);
   image = signal<File | undefined>(undefined);
+  userState=this.store.selectSignal(UserState.getState);
 
   isSubmit = signal(false);
   authState = this.store.selectSignal(AuthState.getState);
@@ -66,20 +65,35 @@ export class AddUserComponent implements OnInit {
   addRole = signal(false);
 
   submitForm(): void {
-    this.store.dispatch(ResetBooleanField);
-    if (this.register.valid && this.picture() > 0) {
-      this.store.dispatch(
-        new PostUserAction({
-          ...this.register.getRawValue(),
-          pictureId: this.picture(),
-        })
-      );
-      if (this.isSuccess()) {
-        this.isSubmit.set(false);
-        this.close.emit();
+
+    if (this.image() !== undefined) {
+      var formData = new FormData();
+      formData.append('picture', this.image()!, this.image()?.name);
+      this.pictureService
+        .addPicture(formData)
+        .pipe(
+          tap((value) => {
+            return value;
+          }),
+          catchError(async (error) => console.error(error.message))
+        )
+        .subscribe((value) => {
+
+          if (this.register.valid) {
+            this.store.dispatch(
+              new PostUserAction({
+                ...this.register.getRawValue(),
+                pictureId: value??this.picture(),
+              })
+            ).subscribe(()=>{
+                this.isSubmit.set(false);
+                this.close.emit();
+            });
+          }
+        });
         this.store.dispatch(ResetBooleanField);
-      }
     }
+    
   }
   register: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
@@ -115,24 +129,6 @@ export class AddUserComponent implements OnInit {
   }
 
   constructor(private readonly pictureService: PictureService) {
-    afterRender({
-      read: () => {
-        if (this.image() !== undefined) {
-          var formData = new FormData();
-          formData.append('picture', this.image()!, this.image()?.name);
-          this.pictureService
-            .addPicture(formData)
-            .pipe(
-              tap((value) => {
-                return value;
-              }),
-              catchError(async (error) => console.error(error.message))
-            )
-            .subscribe((value) => {
-              this.picture.set(value!);
-            });
-        }
-      }
-    });
+    
   }
 }

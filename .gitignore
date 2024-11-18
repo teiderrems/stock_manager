@@ -4,6 +4,7 @@
 /**/.idea
 /**/.vscode
 /**/**/Migrations
+/**/queries
 
 /**/.env
 /**/node_modules

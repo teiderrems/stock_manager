@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class ConstantService {
 
-  private readonly backendUrl: string ="https://backend20241115142223.azurewebsites.net";//"http://localhost:5138/api/"
+  private readonly backendUrl: string ="http://localhost:5138/api/"; //"https://backend20241115142223.azurewebsites.net"
   getBaseUrl(){
     return this.backendUrl;
   }
