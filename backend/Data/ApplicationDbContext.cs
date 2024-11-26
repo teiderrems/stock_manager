@@ -15,7 +15,7 @@ namespace backend.Data
 
         public DbSet<Comment> Comments { get; set; }=default!;
 
-        public DbSet<Bill> Bills { get; set; }
+        public DbSet<Bill> Bills { get; set; }=default!;
 
 
 
@@ -40,8 +40,6 @@ namespace backend.Data
             .HasIndex(r=>r.Name)
             .IsUnique();
 
-            builder.Entity<ApplicationUser>().HasMany(u=>u.Roles)
-            .WithMany();
 
             builder.Entity<ApplicationUser>().HasIndex(u=>u.Email).IsUnique();
 

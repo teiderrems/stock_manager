@@ -49,11 +49,11 @@ namespace backend.Controllers
             var minPrice=HttpContext.Request.Query["minPrice"].ToString();
             var maxPrice = HttpContext.Request.Query["maxPrice"].ToString();
 
-            if (minPrice.Length > 0 && double.Parse(minPrice) is double)
+            if (minPrice.Length > 0)
             {
                 Items = Items.Where(item => item.MinPrice <= double.Parse(minPrice));
             }
-            if (maxPrice.Length>0 && double.Parse(maxPrice) is double)
+            if (maxPrice.Length>0)
             {
                 Items = Items.Where(item => item.MaxPrice <= double.Parse(maxPrice));
             }

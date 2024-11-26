@@ -11,7 +11,7 @@ namespace backend.Controllers
 {
     [Route("api/roles")]
     [ApiController]
-    public class UserRolesController(ApplicationDbContext context,RoleManager<IdentityRole> _roleManager) : ControllerBase
+    public class UserRolesController(RoleManager<IdentityRole> _roleManager) : ControllerBase
     {
 
 

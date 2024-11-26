@@ -2,11 +2,9 @@ using backend.Data;
 using backend.Dto;
 using backend.Models;
 using backend.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +21,7 @@ var emailConfig = builder.Configuration
 
 builder.Services.AddSingleton(emailConfig!);
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+
 // Add services to the container.
 builder.Services.AddAuthorization();
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -37,12 +36,7 @@ builder.Services.AddCors(options =>
                       });
 });
 builder.Services.AddAuthentication();
-//    .AddGoogle(googleOptions =>
-//{
-//    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-//    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-//    googleOptions.SignInScheme = Microsoft.AspNetCore.Identity.IdentityConstants.ExternalScheme;
-//});
+
 builder.Services.AddPagination((options )=>
 {
     options.PageQueryParameterName = "page";
@@ -62,7 +56,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
 
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.User.RequireUniqueEmail = true;
-})
+}).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string is required");
