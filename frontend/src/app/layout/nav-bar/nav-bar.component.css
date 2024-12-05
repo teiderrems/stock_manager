@@ -1,4 +1,4 @@
-nav{
+/* nav{
     @apply flex flex-col p-4 overflow-auto space-y-4 h-full
 }
 
@@ -8,4 +8,8 @@ nav>a{
 
 .active{
     @apply font-bold text-3xl
+} */
+
+nav{
+    @apply flex flex-col p-4 overflow-auto space-y-4 h-full
 }

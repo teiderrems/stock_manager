@@ -6,10 +6,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* 
 .active{
     @apply border-b border-b-blue-500 
+} */
+
+
+
+nav>a{
+    @apply hover:cursor-pointer hover:font-bold  text-gray-500
 }
 
-
+.active{
+    @apply font-bold sm:text-2xl border-b sm:mx-4 border-b-blue-500 
+}
 

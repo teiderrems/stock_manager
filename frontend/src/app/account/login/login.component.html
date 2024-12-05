@@ -1,5 +1,6 @@
-<div class="flex h-full md:flex-row flex-col bg-gray-400">
-  <svg version="1.0" class="sm:flex-1 sm:h-full" xmlns="http://www.w3.org/2000/svg"
+<div class="flex flex-col items-center justify-center h-full">
+  <div class="flex sm:w-4/5 w-full sm:flex-row flex-col">
+  <svg version="1.0" class=" h-44  sm:w-1/2 sm:flex-1 sm:h-full" xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1000.000000 1000.000000"
  preserveAspectRatio="xMidYMid meet">
 
@@ -67,8 +68,8 @@ l0 164 65 0 65 0 0 35 0 35 -180 0 -180 0 0 -35z"/>
 </g>
 </svg>
   <!-- <nz-card class=" shadow-md" nzTitle="Login to continue"> -->
-<div class="flex-1  h-full flex flex-col items-center justify-center">
-    <form nz-form [formGroup]="login"  class="flex px-10 justify-center sm:w-4/6 w-4/6 flex-col sm:space-y-4 space-y-5"   (ngSubmit)="isSubmit.set(true);submitForm()">
+<div class=" sm:h-full sm:w-1/2 flex flex-col items-center justify-center">
+    <form nz-form [formGroup]="login"  class="flex flex-col justify-center sm:w-4/6 md:w-1/2 w-4/6 space-y-3"   (ngSubmit)="isSubmit.set(true);submitForm()">
       <div class="flex flex-col space-y-2 dark:text-gray-300 text-black">
           <label for="email" class="leading-5">Email</label>
           <input class="form-input" required  [email]="true" formControlName="email"  type="email" name="email" id="email">
@@ -94,6 +95,7 @@ l0 164 65 0 65 0 0 35 0 35 -180 0 -180 0 0 -35z"/>
       </div>
     </form>
   </div>
+</div>
     @if (open()) {
       <app-forgot-password (close)="open.set(false)" [isVisible]="open()"/>
     }

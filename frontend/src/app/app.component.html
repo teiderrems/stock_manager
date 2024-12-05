@@ -1,77 +1,23 @@
 <nz-layout class="h-screen overflow-hidden" >
-  <!-- @if (!(router.url.includes("register") || router.url.includes("login"))) { -->
-  <nz-sider
-    class="hidden sm:block text-black dark:text-white"
-    nzCollapsible
-    [(nzCollapsed)]="isCollapsed"
-    [nzTrigger]="null"
-  >
-    <div class="logo"><app-logo/></div>
-    <app-nav-bar />
-  </nz-sider>
-
-  <ng-template #logo>
-    <app-logo/>
-  </ng-template>
-
-  <nz-drawer
-    [nzClosable]="true"
-    [nzVisible]="visible"
-    [nzPlacement]="'left'"
-    [nzTitle]="logo"
-    (nzOnClose)="close()"
-    [nzCloseOnNavigation]="true"
-    [nzWrapClassName]="'flex'"
-    [nzClosable]="true"
-    [nzWidth]="'75%'"
-    [nzOffsetY]="50"
-  >
-    <ng-container *nzDrawerContent>
+  <nz-header [classList]="' bg-white flex justify-between row-span-1 bg-black row-start-1 items-center px-2'">
+      <app-logo/>
       <app-nav-bar/>
-      <nz-footer>
-        <nz-switch [(ngModel)]="switchValue"></nz-switch>
-      </nz-footer>
-    </ng-container>
-  </nz-drawer>
-  <!-- } -->
-  <nz-layout class="overflow-hidden h-full w-full grid grid-rows-12">
-    <nz-header [classList]="' bg-white flex justify-between items-center px-4'">
-      <!-- @if (!(router.url.includes("register") || router.url.includes("login"))) { -->
-      <div class="flex flex-col my-2">
-        <h5 class="sm:hidden block p-2">
-          <button nz-button class="drawer" (click)="open()">
-            @if (visible) {
-
-            <span nz-icon nzType="close" nzTheme="outline"></span>
-            } @else {
-            <span nz-icon nzType="menu" nzTheme="outline"></span>
-            }
-          </button>
-        </h5>
-        <nz-breadcrumb
-          class=" hidden sm:inline pl-2"
-          [nzAutoGenerate]="true"
-        >
-          <nz-breadcrumb-item>Dashbord</nz-breadcrumb-item>
-        </nz-breadcrumb>
-      </div>
+    <app-profile />
+    <!-- <ng-template #profile>
       <app-profile />
-
-      <ng-template #profile>
-        <app-profile />
-      </ng-template>
-
-      <ng-template #navbar>
-        <app-profile />
-      </ng-template>
-    </nz-header>
+    </ng-template>
+    <ng-template #navbar>
+      <app-profile />
+    </ng-template> -->
+  </nz-header>
+  <nz-layout class="overflow-y-auto h-full w-full grid grid-rows-12">
     <nz-content
-      class="overflow-y-auto row-span-11 row-start-2 row-end-12 h-full"
+      class="row-span-11 row-start-2 row-end-12 h-full"
     >
       <div class="h-full"><router-outlet /></div>
+      @if (!(router.url.includes("register") || router.url.includes("login"))) {
+        <nz-footer [hidden]="" class="border-t">Ant Design ©2020 Implement By Angular</nz-footer>
+      }
     </nz-content>
-    <!-- @if (!(router.url.includes("register") || router.url.includes("login"))) {
-    <nz-footer [hidden]="">Ant Design ©2020 Implement By Angular</nz-footer>
-    } -->
   </nz-layout>
 </nz-layout>

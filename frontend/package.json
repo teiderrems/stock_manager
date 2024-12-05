@@ -22,6 +22,7 @@
     "@ngxs/devtools-plugin": "^18.1.1-dev.master-d6b076c",
     "@ngxs/storage-plugin": "^18.1.4",
     "@ngxs/store": "^18.1.1",
+    "@tailwindcss/postcss": "^0.0.0-development.1",
     "ng-zorro-antd": "^18.1.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
